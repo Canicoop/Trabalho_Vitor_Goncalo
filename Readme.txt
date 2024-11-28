@@ -1,0 +1,1 @@
+Este projeto consiste no desenvolvimento de uma loja online especializada em artigos desportivos. A aplicação web permitirá que os utilizadores explorem uma vasta gama de produtos, incluindo roupas, calçados, equipamentos e acessórios para diferentes modalidades, como futebol, corrida, fitness e muito mais.
