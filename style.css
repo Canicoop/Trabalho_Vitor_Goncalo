@@ -16,6 +16,10 @@ body {
     padding: 0 20px;
 }
 
+#Background-index{
+    background-image: url(/imagens/BackGround_Pagina_inicial.jpg);
+}
+
 /* Container do formulário */
 .login-container {
     background-color: white;
