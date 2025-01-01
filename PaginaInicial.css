@@ -62,10 +62,14 @@ body {
     display: block;
 }
 
-.navbar .dropdown-content a {
-    display: block;
+.navbar .dropdown-content div {
     padding: 8px 15px;
     white-space: nowrap;
+    cursor: pointer;
+}
+
+.navbar .dropdown-content div:hover {
+    background-color: #f0f0f0;
 }
 
 .navbar .icon {
@@ -80,4 +84,70 @@ body {
     padding: 10px 0;
     font-size: 14px;
     font-weight: bold;
+}
+
+
+/* Estilizar a foto do usuário como um círculo */
+.user-photo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover; /* Garante que a imagem se ajuste bem ao círculo */
+    margin-right: 10px; /* Espaço entre a imagem e o nome */
+}
+
+/* Estilizar o menu de dropdown */
+.menu-toggle {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 8px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+.menu-toggle:hover {
+    background-color: #f0f0f0;
+}
+
+/* Menu suspenso */
+.dropdown {
+    position: relative;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: #f9f9f9;
+    min-width: 200px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    z-index: 1;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+/* Itens do menu */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    border-bottom: 1px solid #ddd;
+}
+
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+
+/* Remover a borda do último item */
+.dropdown-content a:last-child {
+    border-bottom: none;
 }

@@ -78,3 +78,22 @@ button:hover {
     color: green;
     margin-bottom: 10px;
 }
+
+.form-group input[type="file"] {
+    display: none;
+}
+
+.custom-file-upload {
+    display: block;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    background-color: #f8f8f8;
+    transition: background-color 0.3s;
+}
+
+.custom-file-upload:hover {
+    background-color: #e8e8e8;
+}
