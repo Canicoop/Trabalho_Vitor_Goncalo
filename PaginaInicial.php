@@ -15,12 +15,11 @@ include 'session_check.php';
     <nav class="navbar">
         <div class="nav-left">
             <div id="logo">
-                <img src="Logo.png" alt="" style="width:10rem;">
+            <a  href="PaginaInicial.php"> <img  src="Logo.png" alt="" style="width:10rem;">
             </div>
         </div>
 
         <div class="nav-center">
-            <a href="#">Home</a>
             <div class="dropdown">
                 <a href="#">Clothing</a>
                 <div class="dropdown-content">
@@ -42,10 +41,14 @@ include 'session_check.php';
                     <a href="#">Option 2</a>
                 </div>
             </div>
-        </div>
-
+        </div> 
         <div class="nav-right">
             <?php if (is_logged_in()): ?>
+                <div class="icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                    </svg>
+                </div> 
                 <div class="icon dropdown">
                 <span class="menu-toggle">
                 <?php
@@ -104,8 +107,137 @@ include 'session_check.php';
         }
     });
 });
-
     </script>
+
+    <br><br><br><br>
+
+    <div class="banner"></div>
+
+    <br><br><br><br>
+
+    <h2 class="texto">Coleções</h2>
+    <br><br>
+    <div class="container">
+        <div class="item">
+            <img src="Logo.png" alt="Air Max">
+            <div class="label">Air Max</div>
+        </div>
+        <div class="item">
+            <img src="Logo.png" alt="Y2K">
+            <div class="label">Y2K</div>
+        </div>
+        <div class="item">
+            <img src="Logo.png" alt="Air Force 1">
+            <div class="label">Air Force 1</div>
+        </div>
+        <div class="item">
+            <img src="Logo.png" alt="Model 4">
+            <div class="label">Model 4</div>
+        </div>
+        <div class="item">
+            <img src="Logo.png" alt="Model 5">
+            <div class="label">Model 5</div>
+        </div>
+    </div>
+
+    <br><br><br><br>
+
+    <h1 class="texto">Tendências desta semana</h1>
+    <br><br>
+    <div class="container">
+        <div class="item">
+            <img src="Logo.png" alt="Nike Air Force 1">
+            <div class="label">Nike Air Force 1 '07</div>
+            <div class="price">129,99 €</div>
+        </div>
+        <div class="item">
+            <img src="Logo.png" alt="Nike Air Max Plus">
+            <div class="label">Nike Air Max Plus</div>
+            <div class="price">189,99 €</div>
+        </div>
+        <div class="item">
+            <img src="Logo.png" alt="Air Jordan 4 RM">
+            <div class="label">Air Jordan 4 RM</div>
+            <div class="price">149,99 €</div>
+        </div>
+        <div class="item">
+            <img src="Logo.png" alt="Nike Dunk Low">
+            <div class="label">Nike Dunk Low</div>
+            <div class="price">129,99 €</div>
+        </div>
+        <div class="item">
+            <img src="Logo.png" alt="Adidas Ultraboost">
+            <div class="label">Adidas Ultraboost</div>
+            <div class="price">159,99 €</div>
+        </div>
+    </div>
+
+    <br><br><br><br>
+
+   
+
+    <h1 class="texto">Explorar Mais</h1>
+    <br><br>
+    <div class="containerb">
+    <div class="category">
+            <img src="Criança.png" alt="Criança">
+            <p>Criança</p>
+        </div>
+        <div class="category">
+            <img src="homem.png" alt="Homem">
+            <p>Homem</p>
+        </div>
+        <div class="category">
+            <img src="Mulher.png" alt="Mulher">
+            <p>Mulher</p>
+        </div>
+    </div>
+    </div>
+
+    <br><br><br><br>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <!-- Logo -->
+            <div class="footer-logo">
+                <img src="logo.png" alt="Logo da Empresa">
+            </div>
+
+            <!-- Links úteis -->
+            <div class="footer-links">
+                <h3>Links Úteis</h3>
+                <ul>
+                    <li><a href="#método">Métodos Pagamentos</a></li>
+                    <li><a href="#servicos">Serviços</a></li>
+                    <li><a href="#contato">Contato</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                </ul>
+            </div>
+
+            <!-- Métodos de Pagamento -->
+            <div class="footer-payments">
+                <h3>Métodos de Pagamento</h3>
+                <img src="visa.png" alt="Visa">
+                <img src="mastercard.png" alt="MasterCard">
+                <img src="paypal.png" alt="PayPal">
+                <img src="mbway.png" alt="Mbway">
+            </div>
+
+            <!-- Informações de Contato -->
+            <div class="footer-contact">
+                <h3>Contacto</h3>
+                <p>Email: gonvi@gmail.com</p>
+                <p>Telefone: +351 918326697</p>
+                <p>Morada: Rua da Aldeia nº51 2567-345 Lisboa</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Empresa. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+
+
 </body>
 </html>
 
