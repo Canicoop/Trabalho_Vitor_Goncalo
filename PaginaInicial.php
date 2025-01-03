@@ -20,30 +20,48 @@ include 'session_check.php';
         </div>
 
         <div class="nav-center">
-            <div class="dropdown">
-                <a href="#">Clothing</a>
-                <div class="dropdown-content">
-                    <a href="#">Option 1</a>
-                    <a href="#">Option 2</a>
-                </div>
-            </div>
-            <div class="dropdown">
-                <a href="#">Sneakers</a>
-                <div class="dropdown-content">
-                    <a href="#">Option 1</a>
-                    <a href="#">Option 2</a>
-                </div>
-            </div>
-            <div class="dropdown">
-                <a href="#">Accessories</a>
-                <div class="dropdown-content">
-                    <a href="#">Option 1</a>
-                    <a href="#">Option 2</a>
-                </div>
-            </div>
-        </div> 
+    <div class="dropdown">
+        <a>Roupa</a>
+        <div class="dropdown-content">
+            <a href="PaginaProduto.php?tipo=Casacos">Casacos</a>
+            <a href="PaginaProduto.php?tipo=Calças de Ganga">Calças de Ganga</a>
+            <a href="PaginaProduto.php?tipo=Calças de Fato de Treino">Calças de Fato de Treino</a>
+            <a href="PaginaProduto.php?tipo=Camisolas">Camisolas</a>
+            <a href="PaginaProduto.php?tipo=Sweats">Sweats</a>
+            <a href="PaginaProduto.php?tipo=Fatos de Treino">Fatos de Treino</a>
+        </div>
+    </div>
+    <div class="dropdown">
+        <a>Calçado</a>
+        <div class="dropdown-content">
+            <a href="PaginaProduto.php?tipo=Caminhada e Outdoor">Caminhada e Outdoor</a>
+            <a href="PaginaProduto.php?tipo=Futebol">Futebol</a>
+            <a href="PaginaProduto.php?tipo=Futsal">Futsal</a>
+            <a href="PaginaProduto.php?tipo=Ciclismo">Ciclismo</a>
+        </div>
+    </div>
+    <div class="dropdown">
+        <a>Acessórios</a>
+        <div class="dropdown-content">
+            <a href="PaginaProduto.php?tipo=Chapéus">Chapéus</a>
+            <a href="PaginaProduto.php?tipo=Gorros">Gorros</a>
+            <a href="PaginaProduto.php?tipo=Bolsas">Bolsas</a>
+            <a href="PaginaProduto.php?tipo=Mochilas">Mochilas</a>
+            <a href="PaginaProduto.php?tipo=Meias">Meias</a>
+            <a href="PaginaProduto.php?tipo=Óculos">Óculos</a>
+        </div>
+    </div>
+</div>
+
         <div class="nav-right">
             <?php if (is_logged_in()): ?>
+                
+                <div class="icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
+                <path d="M0 1.5A.5.5 0 0 1 .5 1h1a.5.5 0 0 1 .485.379L2.89 5H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 14H4a.5.5 0 0 1-.491-.408L1.01 2H.5a.5.5 0 0 1-.5-.5zM4.415 13h8.17l1.2-6.4H3.314L4.415 13zM5 15a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm9 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                </svg>
+                </div>
+
                 <div class="icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                         <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
