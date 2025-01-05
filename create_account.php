@@ -73,9 +73,6 @@ $targetFilePath = $targetDir . $fileName;
             <?php if (isset($error)): ?>
                 <p class="error"><?php echo $error; ?></p>
             <?php endif; ?>
-            <?php if (isset($success)): ?>
-                <p class="success"><?php echo $success; ?></p>
-            <?php endif; ?>
             <form enctype="multipart/form-data" action="" method="POST">
                 <label for="nome">Nome</label>
                 <input type="text" id="nome" name="nome" required>

@@ -17,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $row = mysqli_fetch_assoc($result);
 
     if ($row && password_verify($password, $row['Password'])) {
-        // Usuário encontrado e senha verificada, iniciar sessão
+        // Utilizador encontrado e senha verificada, iniciar sessão
         $_SESSION['user_id'] = $row['id'];
         $_SESSION['username'] = $row['Username'];
         $_SESSION['nivel'] = $row['Nível'];
@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
         exit();
     } else {
-        $error = "Usuário ou senha inválidos!";
+        $error = "Utilizador ou senha inválidos!";
     }
 }
 ?>
