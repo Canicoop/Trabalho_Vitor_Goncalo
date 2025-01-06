@@ -159,7 +159,8 @@ include 'session_check.php';
                                 <h2 class="product-name"><?php echo htmlspecialchars($row['Nome']); ?></h2>
                                 <p class="product-price"><?php echo number_format($row['Preco'], 2, ',', '.'); ?>€</p>
                                 <p class="product-stock">Disponível: <?php echo $row['Stock']; ?> Unidades</p>
-                                <button class="product-btn">Adicionar ao Carrinho</button>
+                                <a href="carrinho.php?add_to_cart=<?php echo $row['id']; ?>" class="product-btn">Adicionar ao Carrinho</a>
+    
                             </div>
                         </div>
                         <?php
