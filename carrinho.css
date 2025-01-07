@@ -69,6 +69,16 @@ button {
     font-size: 14px;
     padding: 10px 15px;
     color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.hover{
+    text-decoration: none;
+    font-size: 14px;
+    padding: 10px 15px;
+    color: #ffffff;
     background-color: #000000;
     border: none;
     border-radius: 5px;
@@ -76,10 +86,10 @@ button {
     transition: background-color 0.3s ease;
 }
 
-a:hover,
-button:hover {
+.hover:hover{
     background-color: #444444;
 }
+
 
 button {
     display: inline-block;
@@ -135,3 +145,4 @@ img {
     color: #555555;
     margin: 50px 0;
 }
+

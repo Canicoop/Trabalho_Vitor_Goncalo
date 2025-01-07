@@ -80,6 +80,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_quantity'])) {
     exit;
 }
 
+// Consultar o nome do usuário no banco de dados
+$query_user = "SELECT Nome FROM users WHERE id = $user_id";
+$result_user = $conexao->query($query_user);
+
+// Verificar se o usuário foi encontrado
+if ($result_user && $result_user->num_rows > 0) {
+    $user_data = $result_user->fetch_assoc();
+    $user_name = htmlspecialchars($user_data['Nome']); // Nome do usuário
+} else {
+    $user_name = "Desconhecido"; // Valor padrão caso não encontre o usuário
+}
+
+
+
 
 ?>
 <!DOCTYPE html>
@@ -92,7 +106,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_quantity'])) {
     <link rel="stylesheet" href="PaginaInicial.css">
 </head>
 <body>
-    <h1>Carrinho de Compras</h1>
+    <table>
+        <td><a href="PaginaInicial.php" id="no-style-link">
+                <img class="no-style-link" src="Logo.png" alt="Logo" style="width:10rem;">
+            </a>
+        </td>
+        <td><h1>Carrinho de <?php echo $user_name; ?></h1></td>
+        <td>
+            <div class="icon">
+                <a href="login.php">
+                    <svg xmlns="http://www.w3.org/2000/svg" color="black" width="30" height="30" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M10.146 12.354a.5.5 0 0 1 0-.708L12.793 9H5.5a.5.5 0 0 1 0-1h7.293l-2.647-2.646a.5.5 0 0 1 .708-.708l3.5 3.5a.5.5 0 0 1 0 .708l-3.5 3.5a.5.5 0 0 1-.708 0z"/>
+                        <path fill-rule="evenodd" d="M13 14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-7a2 2 0 0 0-2 2v1a.5.5 0 0 1-1 0V4a3 3 0 0 1 3-3h7a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-7a3 3 0 0 1-3-3v-1a.5.5 0 0 1 1 0v1a2 2 0 0 0 2 2h7z"/>
+                    </svg>
+                </a>
+            </div>
+        </td>
+    </table>
     <?php if ($result->num_rows > 0): ?>
         <table>
             <thead>
@@ -125,7 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_quantity'])) {
                         </td>
                         <td><?php echo number_format($total_item, 2, ',', '.'); ?>€</td>
                         <td>
-                            <a href="carrinho.php?remove_from_cart=<?php echo $row['carrinho_id']; ?>">Remover</a>
+                            <a class="hover" href="carrinho.php?remove_from_cart=<?php echo $row['carrinho_id']; ?>">Remover</a>
                         </td>
                     </tr>
                 <?php endwhile; ?>
@@ -136,7 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_quantity'])) {
                     <td colspan="4">Total Geral</td>
                     <td><?php echo number_format($total_geral, 2, ',', '.'); ?>€</td>
                     <td>
-                    <a href="finalizar_compra.php">Finalizar Compra</a></td>
+                    <a class="hover" href="finalizar_compra.php">Finalizar Compra</a></td>
                 </tr>
             </tfoot>
         </table>
@@ -146,44 +176,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_quantity'])) {
     <br>
     <br>
     <br>
-    <footer class="footer">
-    <div class="footer-container">
-        <!-- Logo -->
-        <div class="footer-logo">
-            <img src="logo.png" alt="Logo da Empresa">
-        </div>
+    
+    <?php include 'footer.php'; ?>
 
-        <!-- Links úteis -->
-        <div class="footer-links">
-            <h3>Links Úteis</h3>
-            <ul>
-                <li><a href="#método">Métodos Pagamentos</a></li>
-                <li><a href="#servicos">Serviços</a></li>
-                <li><a href="#contato">Contato</a></li>
-                <li><a href="#faq">FAQ</a></li>
-            </ul>
-        </div>
-
-        <!-- Métodos de Pagamento -->
-        <div class="footer-payments">
-            <h3>Métodos de Pagamento</h3>
-            <img src="visa.png" alt="Visa">
-            <img src="mastercard.png" alt="MasterCard">
-            <img src="paypal.png" alt="PayPal">
-            <img src="mbway.png" alt="Mbway">
-        </div>
-
-        <!-- Informações de Contato -->
-        <div class="footer-contact">
-            <h3>Contacto</h3>
-            <p>Email: gonvi@gmail.com</p>
-            <p>Telefone: +351 918326697</p>
-            <p>Morada: Rua da Aldeia nº51 2567-345 Lisboa</p>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <p>&copy; 2025 Empresa. Todos os direitos reservados.</p>
-    </div>
-</footer>
 </body>
 </html>
