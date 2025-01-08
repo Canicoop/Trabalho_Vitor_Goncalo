@@ -1,95 +1,109 @@
 <?php
 include 'conexao.php';
 include 'session_check.php';
- 
+
+// Inicializar variáveis para filtros
+$genero = null;
+$tipo_nome = null;
+
+// Verificar se o parâmetro "Genero" está na URL
+if (isset($_GET['Genero'])) {
+    $genero = mysqli_real_escape_string($conexao, $_GET['Genero']); // Escapar o valor do parâmetro para evitar SQL injection
+}
+
+// Verificar se o parâmetro "tipo" está na URL
+if (isset($_GET['tipo'])) {
+    $tipo_nome = mysqli_real_escape_string($conexao, $_GET['tipo']); // Escapar o valor do parâmetro para evitar SQL injection
+}
+
+// Construir a consulta SQL com base nos filtros recebidos
+$sql = "SELECT * FROM produtos WHERE 1=1"; // "1=1" facilita a adição dinâmica de condições
+if ($genero) {
+    $sql .= " AND genero = '$genero'";
+}
+if ($tipo_nome) {
+    // Buscar o ID do tipo correspondente na tabela "tipo"
+    $query_tipo = "SELECT id FROM tipo WHERE descricao = '$tipo_nome'";
+    $result_tipo = mysqli_query($conexao, $query_tipo);
+
+    if ($result_tipo && mysqli_num_rows($result_tipo) > 0) {
+        $row_tipo = mysqli_fetch_assoc($result_tipo);
+        $tipo_id = $row_tipo['id'];
+        $sql .= " AND tipo_id = $tipo_id";
+    } else {
+        // Caso o tipo não exista, exibe mensagem
+        $tipo_nome = null; // Não filtrar por tipo
+    }
+}
+
+// Executar a consulta final
+$result_produtos = mysqli_query($conexao, $sql);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pagina Inicial</title>
+    <title>Produtos</title>
     <link rel="stylesheet" href="PaginaInicial.css">
     <link rel="stylesheet" href="paginaproduto.css">
 </head>
 <body>
 
-        <?php include 'navbar.php'; ?>
+    <?php include 'navbar.php'; ?>
 
-        <div class="free-shipping-bar">
-            FREE SHIPPING ON ALL ORDERS OVER 100€
-        </div>
+    <div class="free-shipping-bar">
+        FREE SHIPPING ON ALL ORDERS OVER 100€
+    </div>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-        const menuToggle = document.querySelector('.menu-toggle');
-        const dropdown = document.querySelector('.dropdown');
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.querySelector('.menu-toggle');
+            const dropdown = document.querySelector('.dropdown');
 
-        menuToggle.addEventListener('click', function() {
-            dropdown.classList.toggle('show');
-        });
+            menuToggle.addEventListener('click', function() {
+                dropdown.classList.toggle('show');
+            });
 
-        // Fechar o menu se o usuário clicar fora dele
-        window.addEventListener('click', function(e) {
-            if (!dropdown.contains(e.target) && !menuToggle.contains(e.target)) {
-                dropdown.classList.remove('show');
-            }
-        });
-    });
-        </script>
-
-<br><br>
-<?php
-        if (isset($_GET['tipo'])) {
-            require 'conexao.php'; // Certifique-se de incluir a conexão com o banco de dados
-        
-            $tipo_nome = $conexao->real_escape_string($_GET['tipo']); // Evita SQL Injection
-        
-            // Primeiro, busca o ID do tipo na tabela "tipo"
-            $query_tipo = "SELECT id FROM tipo WHERE descricao = '$tipo_nome'";
-            $result_tipo = $conexao->query($query_tipo);
-        
-            if ($result_tipo->num_rows > 0) {
-                $row_tipo = $result_tipo->fetch_assoc();
-                $tipo_id = $row_tipo['id']; // Obtém o ID do tipo correspondente
-        
-                // Agora, busca os produtos que possuem esse tipo_id
-                $query_produtos = "SELECT * FROM produtos WHERE tipo_id = $tipo_id";
-                $result_produtos = $conexao->query($query_produtos);
-        
-                if ($result_produtos->num_rows > 0) {
-                    echo '<div class="product-container">'; // Adiciona um container para alinhar os produtos
-        
-                    while ($row = $result_produtos->fetch_assoc()) {
-                        ?>
-                        <div class="product-card">
-                            <div class="product-image">
-                                <img src="produtos/<?php echo htmlspecialchars($row['Imagem']); ?>" alt="<?php echo htmlspecialchars($row['Nome']); ?>">
-                            </div>
-                            <div class="product-info">
-                                <h2 class="product-name"><?php echo htmlspecialchars($row['Nome']); ?></h2>
-                                <p class="product-price"><?php echo number_format($row['Preco'], 2, ',', '.'); ?>€</p>
-                                <p class="product-stock">Disponível: <?php echo $row['Stock']; ?> Unidades</p>
-                                <a href="carrinho.php?add_to_cart=<?php echo $row['id']; ?>" class="product-btn">Adicionar ao Carrinho</a>
-    
-                            </div>
-                        </div>
-                        <?php
-                    }
-        
-                    echo '</div>'; // Fecha o container
-                } else {
-                    echo "<p>Nenhum produto encontrado para o tipo: <strong>$tipo_nome</strong>.</p>";
+            // Fechar o menu se o usuário clicar fora dele
+            window.addEventListener('click', function(e) {
+                if (!dropdown.contains(e.target) && !menuToggle.contains(e.target)) {
+                    dropdown.classList.remove('show');
                 }
-            } else {
-                echo "<p>Tipo não encontrado.</p>";
-            }
-        } else {
-            echo "<p>Selecione um tipo de produto.</p>";
-        }
-        ?>
-                    <br><br><br><br>
+            });
+        });
+    </script>
 
+    <br><br>
+    <?php
+    if ($result_produtos && mysqli_num_rows($result_produtos) > 0) {
+        echo '<div class="product-container">'; // Adiciona um container para alinhar os produtos
+
+        while ($row = mysqli_fetch_assoc($result_produtos)) {
+            ?>
+            <div class="product-card">
+                <div class="product-image">
+                    <a href="ProdutoDetalhes.php?id=<?php echo $row['id']; ?>">
+                        <img src="produtos/<?php echo htmlspecialchars($row['Imagem']); ?>" alt="<?php echo htmlspecialchars($row['Nome']); ?>">
+                    </a>
+                </div>
+                <div class="product-info">
+                    <h2 class="product-name"><?php echo htmlspecialchars($row['Nome']); ?></h2>
+                    <p class="product-price"><?php echo number_format($row['Preco'], 2, ',', '.'); ?>€</p>
+                    <p class="product-stock">Disponível: <?php echo $row['Stock']; ?> Unidades</p>
+                    <a href="carrinho.php?add_to_cart=<?php echo $row['id']; ?>" class="product-btn">Adicionar ao Carrinho</a>
+                </div>
+            </div>
+            <?php
+        }
+
+        echo '</div>'; // Fecha o container
+    } else {
+        echo "<p>Nenhum produto encontrado com os filtros aplicados.</p>";
+    }
+    ?>
+    <br><br><br><br>
 
     <?php include 'footer.php'; ?>
 

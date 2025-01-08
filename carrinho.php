@@ -166,7 +166,7 @@ if ($result_user && $result_user->num_rows > 0) {
                     <td colspan="4">Total Geral</td>
                     <td><?php echo number_format($total_geral, 2, ',', '.'); ?>€</td>
                     <td>
-                    <a class="hover" href="finalizar_compra.php">Finalizar Compra</a></td>
+                    <a class="hover" href="FinalizarCompra.php">Finalizar Compra</a></td>
                 </tr>
             </tfoot>
         </table>

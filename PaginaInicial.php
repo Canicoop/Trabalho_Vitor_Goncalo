@@ -2,11 +2,15 @@
 include 'conexao.php';
 include 'session_check.php';
 
-$sql_tendencia = "SELECT produtos.nome, produtos.preco, produtos.imagem 
+$sql_tendencia = "SELECT produtos.nome, produtos.preco, produtos.Imagem 
                   FROM tendencia 
                   INNER JOIN produtos 
                   ON tendencia.id_produto = produtos.id;";
-$result_tendencia = mysqli_query($conexao, $sql_tendencia)
+$result_tendencia = mysqli_query($conexao, $sql_tendencia);
+
+$sql_colecao = "SELECT descricao, Imagem FROM colecoes";
+$result_colecao = mysqli_query($conexao, $sql_colecao);
+
 ?>
 
 
@@ -52,26 +56,16 @@ $result_tendencia = mysqli_query($conexao, $sql_tendencia)
     <h2 class="texto">Coleções</h2>
     <br><br>
     <div class="container">
-        <div class="item">
-            <img src="Logo.png" alt="Air Max">
-            <div class="label">Air Max</div>
-        </div>
-        <div class="item">
-            <img src="Logo.png" alt="Y2K">
-            <div class="label">Y2K</div>
-        </div>
-        <div class="item">
-            <img src="Logo.png" alt="Air Force 1">
-            <div class="label">Air Force 1</div>
-        </div>
-        <div class="item">
-            <img src="Logo.png" alt="Model 4">
-            <div class="label">Model 4</div>
-        </div>
-        <div class="item">
-            <img src="Logo.png" alt="Model 5">
-            <div class="label">Model 5</div>
-        </div>
+        <?php if ($result_colecao && mysqli_num_rows($result_colecao) > 0): ?>
+            <?php while ($row = mysqli_fetch_assoc($result_colecao)): ?>
+                <div class="item">
+                    <img src="colecoes/<?php echo htmlspecialchars($row['Imagem']); ?>" alt="<?php echo htmlspecialchars($row['descricao']); ?>">
+                    <div class="label"><?php echo htmlspecialchars($row['descricao']); ?></div>
+                </div>
+            <?php endwhile; ?>
+        <?php else: ?>
+            <p>Não há coleções disponíveis no momento.</p>
+        <?php endif; ?>
     </div>
 
     <br><br><br><br>
@@ -82,7 +76,7 @@ $result_tendencia = mysqli_query($conexao, $sql_tendencia)
         <?php if ($result_tendencia && $result_tendencia->num_rows > 0): ?>
             <?php while ($produto_tendencia = $result_tendencia->fetch_assoc()): ?>
                 <div class="item">
-                    <img src="<?php echo $produto_tendencia['imagem']; ?>" alt="<?php echo $produto_tendencia['nome']; ?>">
+                <img src="produtos/<?php echo htmlspecialchars($produto_tendencia['Imagem']); ?>" alt="<?php echo $produto_tendencia['nome']; ?>">
                     <div class="label"><?php echo $produto_tendencia['nome']; ?></div>
                     <div class="price"><?php echo number_format($produto_tendencia['preco'], 2, ',', ' ') . ' €'; ?></div>
                 </div>
@@ -99,19 +93,25 @@ $result_tendencia = mysqli_query($conexao, $sql_tendencia)
     <h1 class="texto">Explorar Mais</h1>
     <br><br>
     <div class="containerb">
-    <div class="category">
-            <img src="Criança.png" alt="Criança">
-            <p>Criança</p>
-        </div>
         <div class="category">
-            <img src="homem.png" alt="Homem">
-            <p>Homem</p>
+            <a href="PaginaProduto.php?Genero=unisex">
+                <img src="Criança.png" alt="Criança">
+            </a>
+                <p>Criança</p>
+            </div>
+            <div class="category">
+                <a href="PaginaProduto.php?Genero=Masculino">
+                    <img src="homem.png" alt="Homem">
+                </a>
+                <p>Homem</p>
+            </div>
+            <div class="category">
+                <a href="PaginaProduto.php?Genero=feminino">
+                    <img src="Mulher.png" alt="Mulher">
+                </a>
+                <p>Mulher</p>
+            </div>
         </div>
-        <div class="category">
-            <img src="Mulher.png" alt="Mulher">
-            <p>Mulher</p>
-        </div>
-    </div>
     </div>
 
     <br><br><br><br>
