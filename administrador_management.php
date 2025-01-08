@@ -206,28 +206,56 @@ if (isset($_POST['adicionar_stock'])) {
             } 
     
     
-    elseif (isset($_POST['atualizar_utilizador'])) {
-        $user_id = $_POST['user_id'];
-        $nome = $_POST['nome'];
-        $email = $_POST['email'];
-        $username = $_POST['username'];
-    
-        // Verifica se uma nova imagem foi enviada
-        if (!empty($_FILES["imagem"]["name"])) {
-            $targetDir = "imagens/";
-            $fileName = basename($_FILES["imagem"]["name"]);
-            $targetFilePath = $targetDir . $fileName;
-    
-            if (move_uploaded_file($_FILES["imagem"]["tmp_name"], $targetFilePath)) {
-                // Atualiza os dados do usuário com a nova imagem
-                $sql = "UPDATE users SET Nome = ?, Email = ?, Username = ?,  Imagem = ? WHERE id = ?";
+            elseif (isset($_POST['atualizar_utilizador'])) {
+                $id = intval($_POST['user_id']);
+                $nome = $_POST['nome'];
+                $email = $_POST['email'];
+                $username = $_POST['username'];
+            
+                // 🔹 Buscar a imagem atual
+                $query = "SELECT Imagem FROM users WHERE id = ?";
+                $stmt = mysqli_prepare($conexao, $query);
+                mysqli_stmt_bind_param($stmt, "i", $id);
+                mysqli_stmt_execute($stmt);
+                $result = mysqli_stmt_get_result($stmt);
+            
+                $imagem_antiga = null;
+                if ($row = mysqli_fetch_assoc($result)) {
+                    $imagem_antiga = $row['Imagem'];
+                    $caminho_imagem_antiga = "imagens/" . $imagem_antiga;
+                }
+            
+                // 🔹 Verifica se um novo ficheiro foi enviado
+                if (!empty($_FILES["imagem"]["name"]) && $_FILES["imagem"]["error"] == 0) {
+                    $fileName = basename($_FILES["imagem"]["name"]);
+                    $targetFilePath = "imagens/" . $fileName;
+            
+                    // Move a nova imagem para a pasta
+                    if (move_uploaded_file($_FILES["imagem"]["tmp_name"], $targetFilePath)) {
+                        // Se já existia uma imagem, apaga a antiga
+                        if (!empty($imagem_antiga) && file_exists($caminho_imagem_antiga)) {
+                            unlink($caminho_imagem_antiga);
+                        }
+                    }
+                } else {
+                    // Se não foi enviada uma nova imagem, mantém a antiga
+                    $fileName = $imagem_antiga;
+                }
+            
+                // 🔹 Atualizar os dados do utilizador na base de dados
+                $sql = "UPDATE users SET Nome = ?, Email = ?, Username = ?, Imagem = ? WHERE id = ?";
                 $stmt = mysqli_prepare($conexao, $sql);
-                mysqli_stmt_bind_param($stmt, "ssssi", $nome, $email, $username,  $fileName, $user_id);
-            } 
-        }
-        
-        mysqli_stmt_close($stmt);
-    }
+                mysqli_stmt_bind_param($stmt, "ssssi", $nome, $email, $username, $fileName, $id);
+            
+                if (mysqli_stmt_execute($stmt)) {
+                    echo "✅ Utilizador atualizado com sucesso!";
+                } else {
+                    echo "❌ Erro ao atualizar utilizador: ";
+                }
+            
+                mysqli_stmt_close($stmt);
+            }
+            
     
     elseif (isset($_POST['adicionar_colecao'])) {
         $descricao = $_POST['nome_colecao'];
@@ -404,65 +432,60 @@ if (isset($_POST['adicionar_stock'])) {
             }
         }
 
-        elseif (isset($_POST['atualizar_produto'])) {
-    $produto_id = $_POST['produto_id'];
-    $nome_produto = $_POST['nome_produto_atualizar'];
-    $preco = $_POST['preco'];
-    $tipo_id = $_POST['tipo_id'];
-    $stock = $_POST['stock'];
-    $colecao = $_POST['colecao'];
-    $genero = $_POST['genero'];
-    
-    // Buscar a imagem atual
-    $query = "SELECT Imagem FROM produtos WHERE id = ?";
-    $stmt = mysqli_prepare($conexao, $query);
-    mysqli_stmt_bind_param($stmt, "i", $produto_id);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    
-    if ($row = mysqli_fetch_assoc($result)) {
-        $imagem_antiga = $row['Imagem'];
-        $caminho_imagem_antiga = "produtos/" . $imagem_antiga;
-    }
-    
-    // Definir o nome do arquivo da imagem
-    $fileName = $imagem_antiga; // Inicializa com o nome da imagem antiga, caso não haja nova imagem
+                        elseif (isset($_POST['atualizar_produto'])) {
+                    $produto_id = $_POST['produto_id'];
+                    $nome_produto = $_POST['nome_produto_atualizar'];
+                    $preco = $_POST['preco'];
+                    $tipo_id = $_POST['tipo_id'];
+                    $stock = $_POST['stock'];
+                    $colecao = $_POST['colecao'];
+                    $genero = $_POST['genero'];
+                    
+                    // Buscar a imagem atual
+                    $query = "SELECT Imagem FROM produtos WHERE id = ?";
+                    $stmt = mysqli_prepare($conexao, $query);
+                    mysqli_stmt_bind_param($stmt, "i", $produto_id);
+                    mysqli_stmt_execute($stmt);
+                    $result = mysqli_stmt_get_result($stmt);
+                    
+                    if ($row = mysqli_fetch_assoc($result)) {
+                        $imagem_antiga = $row['Imagem'];
+                        $caminho_imagem_antiga = "produtos/" . $imagem_antiga;
+                    }
+                    
+                    // Definir o nome do arquivo da imagem
+                    $fileName = $imagem_antiga; // Inicializa com o nome da imagem antiga, caso não haja nova imagem
 
-    // Verificar se uma nova imagem foi enviada
-    if (!empty($_FILES["imagem"]["name"])) {
-        $fileName = basename($_FILES["imagem"]["name"]); // Pega o nome da nova imagem
-        $targetFilePath = "produtos/" . $fileName;
+                    // Verificar se uma nova imagem foi enviada
+                    if (!empty($_FILES["imagem"]["name"])) {
+                        $fileName = basename($_FILES["imagem"]["name"]); // Pega o nome da nova imagem
+                        $targetFilePath = "produtos/" . $fileName;
 
-        // Verificar se a imagem foi movida corretamente para a pasta
-        if (move_uploaded_file($_FILES["imagem"]["tmp_name"], $targetFilePath)) {
-            // Se a imagem antiga existir, apaga-a da pasta
-            if (!empty($imagem_antiga) && file_exists($caminho_imagem_antiga)) {
-                unlink($caminho_imagem_antiga);
-            }
-        } else {
-            echo "Erro ao mover o arquivo de imagem.";
-        }
-    } else {
-        echo "Nenhuma imagem foi enviada ou o arquivo está vazio.";
-    }
+                        // Verificar se a imagem foi movida corretamente para a pasta
+                        if (move_uploaded_file($_FILES["imagem"]["tmp_name"], $targetFilePath)) {
+                            // Se a imagem antiga existir, apaga-a da pasta
+                            if (!empty($imagem_antiga) && file_exists($caminho_imagem_antiga)) {
+                                unlink($caminho_imagem_antiga);
+                            }
+                        } else {
+                            echo "Erro ao mover o arquivo de imagem.";
+                        }
+                    } else {
+                        echo "Nenhuma imagem foi enviada ou o arquivo está vazio.";
+                    }
 
-    // Verifique se o nome do arquivo não está vazio
-    if (!empty($fileName)) {
-        // Atualiza o produto no banco de dados com a nova imagem
-        $sql = "UPDATE produtos SET Nome = ?, Preco = ?, tipo_id = ?, Stock = ?, Colecao = ?, Genero = ?, Imagem = ? WHERE id = ?";
-        $stmt = mysqli_prepare($conexao, $sql);
-        mysqli_stmt_bind_param($stmt, "sdiiissi", $nome_produto, $preco, $tipo_id, $stock, $colecao, $genero, $fileName, $produto_id);
+                    // Verifique se o nome do arquivo não está vazio
+                    if (!empty($fileName)) {
+                        // Atualiza o produto no banco de dados com a nova imagem
+                        $sql = "UPDATE produtos SET Nome = ?, Preco = ?, tipo_id = ?, Stock = ?, Colecao = ?, Genero = ?, Imagem = ? WHERE id = ?";
+                        $stmt = mysqli_prepare($conexao, $sql);
+                        mysqli_stmt_bind_param($stmt, "sdiiissi", $nome_produto, $preco, $tipo_id, $stock, $colecao, $genero, $fileName, $produto_id);
 
-        if (mysqli_stmt_execute($stmt)) {
-            echo "Produto atualizado com sucesso!";
-        } else {
-            echo "Erro ao atualizar o produto: " . mysqli_error($conexao);
-        }
-    } else {
-        echo "Erro: A imagem não foi processada corretamente. Verifique o envio do arquivo.";
-    }
-}
-}
+                        if (mysqli_stmt_execute($stmt)) {
+                        } 
+                    }
+                }
+                }
         
 ?>
 <!DOCTYPE html>
@@ -796,7 +819,7 @@ if (isset($_POST['adicionar_stock'])) {
                         $id = intval($_POST['user_id']);
 
                         // Busca os dados do utilizador
-                        $query = "SELECT Nome, Email, Username, Nivel, Imagem FROM users WHERE id = ?";
+                        $query = "SELECT Nome, Email, Username, Imagem FROM users WHERE id = ?";
                         $stmt = mysqli_prepare($conexao, $query);
                         mysqli_stmt_bind_param($stmt, "i", $id);
                         mysqli_stmt_execute($stmt);
@@ -835,6 +858,7 @@ if (isset($_POST['adicionar_stock'])) {
                             <button type="submit" name="atualizar_utilizador">Atualizar</button>
                         </form>
                     <?php endif; ?>
+
 
                 <?php } elseif ($acao === 'atualizar_tipo') { ?>
                     <h3>Atualizar Tipo</h3>

@@ -2,7 +2,7 @@
 include 'conexao.php';
 include 'session_check.php';
 
-$sql_tendencia = "SELECT produtos.nome, produtos.preco, produtos.imagem 
+$sql_tendencia = "SELECT produtos.nome, produtos.preco, produtos.Imagem 
                   FROM tendencia 
                   INNER JOIN produtos 
                   ON tendencia.id_produto = produtos.id;";
@@ -82,7 +82,7 @@ $result_tendencia = mysqli_query($conexao, $sql_tendencia)
         <?php if ($result_tendencia && $result_tendencia->num_rows > 0): ?>
             <?php while ($produto_tendencia = $result_tendencia->fetch_assoc()): ?>
                 <div class="item">
-                    <img src="<?php echo $produto_tendencia['imagem']; ?>" alt="<?php echo $produto_tendencia['nome']; ?>">
+                <img src="produtos/<?php echo htmlspecialchars($produto_tendencia['Imagem']); ?>" alt="<?php echo $produto_tendencia['nome']; ?>">
                     <div class="label"><?php echo $produto_tendencia['nome']; ?></div>
                     <div class="price"><?php echo number_format($produto_tendencia['preco'], 2, ',', ' ') . ' €'; ?></div>
                 </div>
