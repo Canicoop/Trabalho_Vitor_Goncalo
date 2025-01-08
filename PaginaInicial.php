@@ -6,7 +6,7 @@ $sql_tendencia = "SELECT produtos.nome, produtos.preco, produtos.imagem
                   FROM tendencia 
                   INNER JOIN produtos 
                   ON tendencia.id_produto = produtos.id;";
-$result_tendencia = $mysqli->query($sql_tendencia); 
+$result_tendencia = mysqli_query($conexao, $sql_tendencia)
 ?>
 
 
