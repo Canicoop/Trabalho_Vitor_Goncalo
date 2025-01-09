@@ -123,7 +123,6 @@ if (isset($_POST['adicionar_stock'])) {
     // Eliminar Tipo
     elseif (isset($_POST['eliminar_tipo'])) {
         if (!isset($_POST['tipo']) || empty($_POST['tipo'])) {
-            echo "<p style='color: red;'>Erro: Nenhum tipo selecionado!</p>";
         } else {
             $tipo_id = intval($_POST['tipo']);
     
@@ -560,7 +559,7 @@ if (isset($_POST['adicionar_stock'])) {
                 </span>
                 <!-- Menu suspenso -->
                 <div class="dropdown-content">
-                    <a href="../logout.php">Logout</a>
+                    <a href="logout.php">Logout</a>
                 </div>
             </div>
             </div>
@@ -583,9 +582,7 @@ if (isset($_POST['adicionar_stock'])) {
     });
         </script>
 
-    <div class="container">
-        <!-- MENU PRINCIPAL -->
-        <div class="menu-container">
+<div class="menu-container">
         <form method="GET"><button type="submit" name="acao" value="adicionar_stock" class="menu-item"><img src="../imagemoperacoes/Stock.jpeg"><span class="as">Adicionar Stock</span></button></form>
         <form method="GET"><button type="submit" name="acao" value="eliminar_stock" class="menu-item"><img src="../imagemoperacoes/Stock.jpeg"><span class="as">Eliminar Stock</span></button></form>
         <form method="GET"><button type="submit" name="acao" value="adicionar_tendencia" class="menu-item"><img src="../imagemoperacoes/Tendencia.jpeg"><span class="as">Adicionar Tendência</span></button></form>
@@ -1016,22 +1013,24 @@ if (isset($_POST['adicionar_stock'])) {
 
 
                 <?php } elseif ($acao === 'atualizar_produto') { ?>
-                    <h3>Atualizar Produto</h3>
-                    <form method="POST">
-                        <label for="id">Produto:</label>
-                        <select name="colecao" onchange="this.form.submit()">
-                            <option selected>Selecione uma opção</option>
-                            <?php
-                            $query = "SELECT * FROM produtos";
-                            $result = mysqli_query($conexao, $query);
-                            while ($row = mysqli_fetch_assoc($result)) {
-                                // Se foi selecionado, manter a seleção
-                                $selected = (isset($_POST['colecao']) && $_POST['colecao'] == $row['id']) ? 'selected' : '';
-                                echo '<option value="' . $row['id'] . '" ' . $selected . '>' . $row['Nome'] . '</option>';
-                            }
-                            ?>
-                        </select>
-                    </form>
+    <h3>Atualizar Produto</h3>
+    <form method="POST">
+        <label for="id">Produto:</label>
+        <select name="colecao" onchange="this.form.submit()">
+            <option selected>Selecione uma opção</option>
+            <?php
+            $query = "SELECT id, Nome, tamanho FROM produtos"; // Selecionando os campos necessários
+            $result = mysqli_query($conexao, $query);
+            while ($row = mysqli_fetch_assoc($result)) {
+                // Se foi selecionado, manter a seleção
+                $selected = (isset($_POST['colecao']) && $_POST['colecao'] == $row['id']) ? 'selected' : '';
+                echo '<option value="' . $row['id'] . '" ' . $selected . '>' . htmlspecialchars($row['Nome']) . ' (' . htmlspecialchars($row['tamanho']) . ')</option>';
+            }
+            ?>
+        </select>
+    </form>
+
+
 
                     <?php
                     // Inicializa variáveis vazias
@@ -1136,4 +1135,3 @@ if (isset($_POST['adicionar_stock'])) {
     <?php } ?>
 </body>
 </html>
-

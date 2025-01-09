@@ -688,9 +688,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     });
         </script>
 
-    <div class="container">
+<div class="container">
         <!-- MENU PRINCIPAL -->
-        <div class="menu-container">
+    <div class="menu-container">
         <form method="GET"><button type="submit" name="acao" value="adicionar_stock" class="menu-item"><img src="../imagemoperacoes/Stock.jpeg"><span class="as">Adicionar Stock</span></button></form>
         <form method="GET"><button type="submit" name="acao" value="eliminar_stock" class="menu-item"><img src="../imagemoperacoes/Stock.jpeg"><span class="as">Eliminar Stock</span></button></form>
         <form method="GET"><button type="submit" name="acao" value="adicionar_tendencia" class="menu-item"><img src="../imagemoperacoes/Tendencia.jpeg"><span class="as">Adicionar Tendência</span></button></form>
