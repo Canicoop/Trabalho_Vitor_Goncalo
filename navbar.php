@@ -63,7 +63,6 @@ if ($result_navbar && $result_navbar->num_rows > 0) {
                 <div class="dropdown-content">
                     <a href="minhas_encomendas.php">Minhas Encomendas</a>
                     <a href="minha_conta.php">Minha Conta</a>
-                    <a href="sobre_nos.php">Sobre Nós</a>
                     <a href="logout.php">Logout</a>
                 </div>
                 <?php } ?>

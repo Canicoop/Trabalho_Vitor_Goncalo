@@ -10,26 +10,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     
 if (isset($_POST['adicionar_stock'])) {
-    $produto_id = $_POST['produto_id'];  // Usando o nome correto da variável
+    $produto_id = $_POST['produto_id'];  
     $quantidade = $_POST['quantidade'];
 
-    // Consulta SQL para atualizar o estoque
     $sql = "UPDATE produtos SET Stock = Stock + ? WHERE id = ?";
 
-    // Preparar a consulta
     $stmt = mysqli_prepare($conexao, $sql);
 
-    // Associar os parâmetros corretamente (quantidade e id do produto)
     mysqli_stmt_bind_param($stmt, "ii", $quantidade, $produto_id);
 
-    // Executar a consulta
     mysqli_stmt_execute($stmt);
 
-    // Verificar se o estoque foi atualizado
-    if (mysqli_stmt_affected_rows($stmt) > 0) {
+    if (mysqli_stmt_execute($stmt)) {
+        echo "<p class='success'>Dados atualizados com sucesso!</p>";
+        header("Refresh:2; url=gestor_management.php"); // Redireciona após 2 segundos
+    } else {
+        $error = "Erro ao adicionar Stock: " . mysqli_error($conexao);
     }
 
-    // Fechar a declaração
+
     mysqli_stmt_close($stmt);
 }
     
@@ -40,7 +39,6 @@ if (isset($_POST['adicionar_stock'])) {
         // Consulta SQL para atualizar o stock
         $sql = "UPDATE produtos SET Stock = Stock - ? WHERE id = ?";
     
-        // Preparar a consulta
         $stmt = mysqli_prepare($conexao, $sql);
     
         // Associar os parâmetros corretamente (quantidade e id do produto)
@@ -49,9 +47,13 @@ if (isset($_POST['adicionar_stock'])) {
         // Executar a consulta
         mysqli_stmt_execute($stmt);
     
-        // Verificar se o estoque foi atualizado
-        if (mysqli_stmt_affected_rows($stmt) > 0) {
+        if (mysqli_stmt_execute($stmt)) {
+            echo "<p class='success'>Dados atualizados com sucesso!</p>";
+            header("Refresh:2; url=gestor_management.php"); // Redireciona após 2 segundos
+        } else {
+            $error = "Erro ao eliminar stock: " . mysqli_error($conexao);
         }
+    
     
         // Fechar a declaração
         mysqli_stmt_close($stmt);
@@ -74,7 +76,12 @@ if (isset($_POST['adicionar_stock'])) {
         $sql = "INSERT INTO tendencia (id_produto) VALUES (?)";
         $stmt = mysqli_prepare($conexao, $sql);
         mysqli_stmt_bind_param($stmt, "i", $produto_id);
-        mysqli_stmt_execute($stmt);
+        if (mysqli_stmt_execute($stmt)) {
+            echo "<p class='success'>Dados atualizados com sucesso!</p>";
+            header("Refresh:2; url=gestor_management.php"); // Redireciona após 2 segundos
+        } else {
+            $error = "Erro ao adicionar tendencia: " . mysqli_error($conexao);
+        }
         mysqli_stmt_close($stmt);
 
     }
@@ -101,7 +108,8 @@ if (isset($_POST['adicionar_stock'])) {
                 mysqli_stmt_bind_param($stmt, "ss", $tipo, $tipo_tipo);
     
                 if (mysqli_stmt_execute($stmt)) {
-                    $success = "Tipo adicionado com sucesso!";
+                    echo "<p class='success'>Dados atualizados com sucesso!</p>";
+                    header("Refresh:2; url=gestor_management.php"); // Redireciona após 2 segundos
                 } else {
                     $error = "Erro ao adicionar tipo: " . mysqli_error($conexao);
                 }
@@ -124,7 +132,11 @@ if (isset($_POST['adicionar_stock'])) {
             mysqli_stmt_bind_param($stmt, "i", $tipo_id);
     
             if (mysqli_stmt_execute($stmt)) {
-            } 
+                echo "<p class='success'>Dados atualizados com sucesso!</p>";
+        header("Refresh:2; url=gestor_management.php"); // Redireciona após 2 segundos
+            } else {
+                $error = "Erro ao adicionar tipo: " . mysqli_error($conexao);
+            }
     
             mysqli_stmt_close($stmt);
         }
@@ -153,16 +165,16 @@ if (isset($_POST['adicionar_stock'])) {
                 mysqli_stmt_bind_param($stmt, "ssi", $descricao, $tipo_tipo, $tipo_id);
     
                 if (mysqli_stmt_execute($stmt)) {
-                    echo "<p style='color:green;'>Tipo atualizado com sucesso!</p>";
+                    echo "<p class='success'>Dados atualizados com sucesso!</p>";
+                    header("Refresh:2; url=gestor_management.php"); // Redireciona após 2 segundos
                 } else {
-                    echo "<p style='color:red;'>Erro ao atualizar tipo: " . mysqli_error($conexao) . "</p>";
-                }
+                    echo "<p class='success'>Dados atualizados com sucesso!</p>";
+                    header("Refresh:2; url=gestor_management.php"); // Redireciona após 2 segundos                
+                    }
             }
     
             mysqli_stmt_close($stmt);
-        } else {
-            echo "<p style='color:red;'>Erro: Todos os campos são obrigatórios!</p>";
-        }
+        } 
      }
     
             
@@ -183,7 +195,12 @@ if (isset($_POST['adicionar_stock'])) {
         $sql = "DELETE FROM tendencia WHERE id_produto = ?";
         $stmt = mysqli_prepare($conexao, $sql);
         mysqli_stmt_bind_param($stmt, "i", $produto_id);
-        mysqli_stmt_execute($stmt);
+        if (mysqli_stmt_execute($stmt)) {
+            echo "<p class='success'>Dados atualizados com sucesso!</p>";
+        header("Refresh:2; url=gestor_management.php"); // Redireciona após 2 segundos
+        } else {
+            $error = "Erro ao adicionar tendência: " . mysqli_error($conexao);
+        }
         mysqli_stmt_close($stmt);
     
     }
@@ -199,7 +216,11 @@ if (isset($_POST['adicionar_stock'])) {
                     $sql = "SELECT * FROM colecoes WHERE descricao = ?";
                     $stmt = mysqli_prepare($conexao, $sql);
                     mysqli_stmt_bind_param($stmt, "s", $descricao);
-                    mysqli_stmt_execute($stmt);
+                    if (mysqli_stmt_execute($stmt)) {
+                        $success = "Tipo adicionado com sucesso!";
+                    } else {
+                        $error = "Erro ao adicionar tipo: " . mysqli_error($conexao);
+                    }
                     $result = mysqli_stmt_get_result($stmt);
                     
                    
@@ -210,7 +231,8 @@ if (isset($_POST['adicionar_stock'])) {
                 $stmt = mysqli_prepare($conexao, $sql);
                     mysqli_stmt_bind_param($stmt, "ss", $descricao, $fileName);
                    mysqli_stmt_execute($stmt);
-                   $sucess = "Criada com sucesso!";
+                   echo "<p class='success'>Dados atualizados com sucesso!</p>";
+        header("Refresh:2; url=gestor_management.php"); // Redireciona após 2 segundos
             }
     }
 }
@@ -237,7 +259,8 @@ if (isset($_POST['adicionar_stock'])) {
                     // Excluir a coleção
                     $sql = "DELETE FROM colecoes WHERE id = $id";
                     if (mysqli_query($conexao, $sql)) {
-                        $success = "Colecão eliminada com Sucesso!";
+                        echo "<p class='success'>Dados atualizados com sucesso!</p>";
+        header("Refresh:2; url=gestor_management.php"); // Redireciona após 2 segundos
                     } else {
                         $error = "Erro ao eliminar a coleção!";
                     }
@@ -278,6 +301,10 @@ if (isset($_POST['adicionar_stock'])) {
                     if ($stmt) {
                         mysqli_stmt_bind_param($stmt, "ssi", $nome, $fileName, $id);
                         if (mysqli_stmt_execute($stmt)) {
+                            echo "<p class='success'>Dados atualizados com sucesso!</p>";
+                         header("Refresh:2; url=gestor_management.php"); // Redireciona após 2 segundos
+                        } else {
+                            $error = "Erro ao atualizar Coleção: " . mysqli_error($conexao);
                         }
                     } 
                 }
@@ -327,10 +354,11 @@ if (isset($_POST['adicionar_stock'])) {
                                     mysqli_stmt_bind_param($stmt, "sdissisi",  $nome,$preco,$tipo_id, $fileName,$stock,$colecao_id,$genero,$tamanho);
                                     
                                     if (mysqli_stmt_execute($stmt)) {
-                                    
+                                        echo "<p class='success'>Dados atualizados com sucesso!</p>";
+        header("Refresh:2; url=gestor_management.php"); // Redireciona após 2 segundos
                                     } else {
-                                    
-                                    }
+                                        $error = "Erro ao adicionar produto: " . mysqli_error($conexao);
+                                    } 
                                     mysqli_stmt_close($stmt);
                                 } 
                             }
@@ -348,6 +376,10 @@ if (isset($_POST['adicionar_stock'])) {
                 
                             // Executar a consulta
                             if (mysqli_stmt_execute($stmt)) {
+                                echo "<p class='success'>Dados atualizados com sucesso!</p>";
+        header("Refresh:2; url=gestor_management.php"); // Redireciona após 2 segundos
+                            } else {
+                                $error = "Erro ao eliminar produto: " . mysqli_error($conexao);
                             }
                 
                             // Fechar a declaração
@@ -415,14 +447,12 @@ if (isset($_POST['adicionar_stock'])) {
         mysqli_stmt_bind_param($stmt, "sdiiisssi", $nome_produto, $preco, $tipo_id, $stock, $colecao, $genero, $fileName, $tamanho, $produto_id);
 
         if (mysqli_stmt_execute($stmt)) {
-            echo "Produto atualizado com sucesso!";
+            echo "<p class='success'>Dados atualizados com sucesso!</p>";
+            header("Refresh:2; url=gestor_management.php"); // Redireciona após 2 segundos
         } else {
-            echo "Erro ao atualizar o produto: " . mysqli_error($conexao);
-        }
-    } else {
-        echo "Erro: A imagem não foi processada corretamente. Verifique o envio do arquivo.";
-    }
-}
+            $error = "Erro ao atualizado produto: " . mysqli_error($conexao);
+        
+        }}}
 }
         
 ?>

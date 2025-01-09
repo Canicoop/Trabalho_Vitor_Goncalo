@@ -44,31 +44,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id_pagamento = $_POST['id_pagamento']; // Forma de pagamento escolhida
 
     // Obter o id_carrinho do cliente
-    $query_carrinho = "SELECT id FROM carrinho WHERE id_Cliente = $user_id";
-    $result_carrinho = $conexao->query($query_carrinho);
+    $query_carrinho = "SELECT id FROM carrinho WHERE id_Cliente = ?";
+    $stmt_carrinho = $conexao->prepare($query_carrinho);
+    $stmt_carrinho->bind_param("i", $user_id);
+    $stmt_carrinho->execute();
+    $result_carrinho = $stmt_carrinho->get_result();
+
     if ($result_carrinho->num_rows > 0) {
         $id_carrinho = $result_carrinho->fetch_assoc()['id'];
     } else {
-        die('Carrinho não encontrado.');
+        die('❌ Carrinho não encontrado.');
     }
 
-    // Inserindo os dados na tabela encomendas
-    $query_insert = "INSERT INTO encomendas (id_carrinho, id_pagamento, nome_completo, email, telemovel, morada, codigo_postal, cidade, total)
-                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    // ✅ Inserindo na tabela "encomendas" (incluindo `data_compra`)
+    $query_insert = "INSERT INTO encomendas (id_carrinho, id_pagamento, nome_completo, email, telemovel, morada, codigo_postal, cidade, total, data_compra)
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+
     $stmt = $conexao->prepare($query_insert);
+    if (!$stmt) {
+        die("❌ Erro na preparação da query: " . $conexao->error);
+    }
+
     $stmt->bind_param("iissssssd", $id_carrinho, $id_pagamento, $nome, $email, $telemovel, $morada, $codigo_postal, $cidade, $total_geral);
 
     if ($stmt->execute()) {
-        echo "Encomenda realizada com sucesso!";
-
-       
-        // Remover produtos do carrinho após finalizar compra
-        $query_limpar_carrinho = "DELETE FROM carrinho WHERE id_Cliente = $user_id";
-        $conexao->query($query_limpar_carrinho);
+        echo "✅ Encomenda realizada com sucesso!";
+        
+        // 🔹 Remover produtos do carrinho após finalizar compra
+        $query_limpar_carrinho = "DELETE FROM carrinho WHERE id_Cliente = ?";
+        $stmt_limpar = $conexao->prepare($query_limpar_carrinho);
+        $stmt_limpar->bind_param("i", $user_id);
+        $stmt_limpar->execute();
     } else {
-        echo "Erro ao finalizar a encomenda: " . $stmt->error;
+        die("❌ Erro ao inserir encomenda: " . $stmt->error);
     }
 }
+
+
+
 
 ?>
 
