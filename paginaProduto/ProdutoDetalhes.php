@@ -1,6 +1,6 @@
 <?php
-include 'conexao.php';
-include 'session_check.php';
+include '../conexao.php';
+include '../session_check.php';
 
 // Verificar se o Nome foi passado pela URL
 if (!isset($_GET['Nome'])) {
@@ -46,12 +46,12 @@ while ($tamanho = $tamanhos_result->fetch_assoc()) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($produto['Nome']); ?></title>
     <link rel="stylesheet" href="ProdutoDetalhes.css">
-    <link rel="stylesheet" href="PaginaInicial.css">
+    <link rel="stylesheet" href="../paginaInicial/PaginaInicial.css">
     <link rel="stylesheet" href="paginaproduto.css">
 </head>
 <body>
 
-    <?php include 'navbar.php'; ?>
+    <?php include '../navbar.php'; ?>
 
     <div class="free-shipping-bar">
         FREE SHIPPING ON ALL ORDERS OVER 100€
@@ -59,7 +59,7 @@ while ($tamanho = $tamanhos_result->fetch_assoc()) {
 
     <div class="produto-detalhes">
         <div class="produto-imagem">
-            <img src="produtos/<?php echo htmlspecialchars($produto['Imagem']); ?>" alt="<?php echo htmlspecialchars($produto['Nome']); ?>">
+            <img src="../produtos/<?php echo htmlspecialchars($produto['Imagem']); ?>" alt="<?php echo htmlspecialchars($produto['Nome']); ?>">
         </div>
         <div class="produto-info">
             <h1><?php echo htmlspecialchars($produto['Nome']); ?></h1>
@@ -70,15 +70,16 @@ while ($tamanho = $tamanhos_result->fetch_assoc()) {
                 <h3>Tamanhos Disponíveis:</h3>
                 <?php if (count($tamanhos) > 0): ?>
                     <!-- Exibir o formulário apenas se houver tamanhos disponíveis -->
-                    <form action="carrinho.php" method="GET">
+                    <form action="../carrinho/carrinho.php" method="GET">
                         <label for="tamanho">Escolha o tamanho:</label>
                         <select name="tamanho" id="tamanho" required>
                             <option value="">Selecione um tamanho</option>
+                            <br>
                             <?php foreach ($tamanhos as $tamanho): ?>
                             <option value="<?php echo $tamanho['id']; ?>"><?php echo htmlspecialchars($tamanho['descricao']); ?></option>
                          <?php endforeach; ?>
                          </select>
-
+                                <br>
                              <!-- Enviar o ID do produto e o Nome junto com o tamanho -->
                          <input type="hidden" name="produto_id" value="<?php echo $produto['id']; ?>">
                         <input type="hidden" name="produto_nome" value="<?php echo htmlspecialchars($produto['Nome']); ?>">
@@ -93,7 +94,7 @@ while ($tamanho = $tamanhos_result->fetch_assoc()) {
         </div>
     </div>
 
-    <?php include 'footer.php'; ?>
+    <?php include '../footer.php'; ?>
 
 </body>
 </html>

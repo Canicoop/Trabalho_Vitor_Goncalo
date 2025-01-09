@@ -1,6 +1,6 @@
 <?php
-include 'conexao.php';
-include 'session_check.php';
+include '../conexao.php';
+include '../session_check.php';
 
 $sql_tendencia = "SELECT produtos.nome, produtos.preco, produtos.Imagem 
                   FROM tendencia 
@@ -23,7 +23,7 @@ $result_colecao = mysqli_query($conexao, $sql_colecao);
     <link rel="stylesheet" href="PaginaInicial.css">
 </head>
 <body>
-    <?php include 'navbar.php'; ?>
+    <?php include '../navbar.php'; ?>
 
     <div class="free-shipping-bar">
         FREE SHIPPING ON ALL ORDERS OVER 100€
@@ -59,7 +59,7 @@ $result_colecao = mysqli_query($conexao, $sql_colecao);
         <?php if ($result_colecao && mysqli_num_rows($result_colecao) > 0): ?>
             <?php while ($row = mysqli_fetch_assoc($result_colecao)): ?>
                 <div class="item">
-                    <img src="colecoes/<?php echo htmlspecialchars($row['Imagem']); ?>" alt="<?php echo htmlspecialchars($row['descricao']); ?>">
+                    <img src="../colecoes/<?php echo htmlspecialchars($row['Imagem']); ?>" alt="<?php echo htmlspecialchars($row['descricao']); ?>">
                     <div class="label"><?php echo htmlspecialchars($row['descricao']); ?></div>
                 </div>
             <?php endwhile; ?>
@@ -76,7 +76,7 @@ $result_colecao = mysqli_query($conexao, $sql_colecao);
         <?php if ($result_tendencia && $result_tendencia->num_rows > 0): ?>
             <?php while ($produto_tendencia = $result_tendencia->fetch_assoc()): ?>
                 <div class="item">
-                <img src="produtos/<?php echo htmlspecialchars($produto_tendencia['Imagem']); ?>" alt="<?php echo $produto_tendencia['nome']; ?>">
+                <img src="../produtos/<?php echo htmlspecialchars($produto_tendencia['Imagem']); ?>" alt="<?php echo $produto_tendencia['nome']; ?>">
                     <div class="label"><?php echo $produto_tendencia['nome']; ?></div>
                     <div class="price"><?php echo number_format($produto_tendencia['preco'], 2, ',', ' ') . ' €'; ?></div>
                 </div>
@@ -94,20 +94,20 @@ $result_colecao = mysqli_query($conexao, $sql_colecao);
     <br><br>
     <div class="containerb">
         <div class="category">
-            <a href="PaginaProduto.php?Genero=unisex">
-                <img src="Unisexo.webp" alt="Unisexo">
+            <a href="../paginaProduto/PaginaProduto.php?Genero=unisex">
+                <img src="../Unisexo.webp" alt="Unisexo">
             </a>
                 <p>Unisexo</p>
             </div>
             <div class="category">
-                <a href="PaginaProduto.php?Genero=Masculino">
-                    <img src="homem.png" alt="Homem">
+                <a href="../paginaProduto/PaginaProduto.php?Genero=Masculino">
+                    <img src="../homem.png" alt="Homem">
                 </a>
                 <p>Homem</p>
             </div>
             <div class="category">
-                <a href="PaginaProduto.php?Genero=feminino">
-                    <img src="Mulher.png" alt="Mulher">
+                <a href="../paginaProduto/PaginaProduto.php?Genero=feminino">
+                    <img src="../Mulher.png" alt="Mulher">
                 </a>
                 <p>Mulher</p>
             </div>
@@ -116,7 +116,7 @@ $result_colecao = mysqli_query($conexao, $sql_colecao);
 
     <br><br><br><br>
 
-    <?php include 'footer.php'; ?>
+    <?php include '../footer.php'; ?>
 
 
 

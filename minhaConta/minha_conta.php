@@ -1,6 +1,6 @@
 <?php
-include 'conexao.php';
-include 'session_check.php';
+include '../conexao.php';
+include '../session_check.php';
 
 
 $user_id = $_SESSION['user_id'];
@@ -38,10 +38,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Atualizar Perfil</title>
     <link rel="stylesheet" href="minha_conta.css">
-    <link rel="stylesheet" href="PaginaInicial.css">
+    <link rel="stylesheet" href="../paginaInicial/PaginaInicial.css">
 </head>
 <body>
-    <?php include 'navbar.php'; ?>
+    <?php include '../navbar.php'; ?>
     <br><br><br>
     <div class="container">
         <h2>Atualizar Perfil</h2>
@@ -59,6 +59,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
     </div>
     <br><br><br>
-    <?php include 'footer.php'; ?>
+    <?php include '../footer.php'; ?>
 </body>
 </html>

@@ -1,6 +1,6 @@
 <?php
-include 'conexao.php';
-include 'session_check.php';
+include '../conexao.php';
+include '../session_check.php';
 
 // Verifica se alguma ação foi solicitada via GET
 $acao = isset($_GET['acao']) ? $_GET['acao'] : '';
@@ -567,8 +567,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestão de Produtos</title>
-    <link rel="stylesheet" href="PaginaInicial.css">
-    <link rel="stylesheet" href="gestormanagementstyle.css">
+    <link rel="stylesheet" href="../paginaInicial/PaginaInicial.css">
+    <link rel="stylesheet" href="../gestor/gestormanagementstyle.css">
     <style>
 .menu-container {
     display: flex;
@@ -645,7 +645,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <nav class="navbar">
         <div class="nav-left">
             <div id="logo">
-                <img src="Logo.png" alt="Logo" style="width:10rem;">
+                <img src="../logo/Logo.png" alt="Logo" style="width:10rem;">
             </div>
         </div>
         <h1>Centro de Gestores</h1>
@@ -656,7 +656,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $sql = "SELECT Imagem FROM users WHERE Username = '{$_SESSION['username']}'";
                 $result = mysqli_query($conexao, $sql);
                 while($row = mysqli_fetch_array($result)) {
-                $imageURL = 'imagens/'.$row["Imagem"];
+                $imageURL = '../imagens/'.$row["Imagem"];
                         ?>
                          <!-- Foto do usuário dentro de um círculo -->
                     <img class="user-photo" src="<?php echo $imageURL; }?>" alt="User Photo">
@@ -665,7 +665,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </span>
                 <!-- Menu suspenso -->
                 <div class="dropdown-content">
-                    <a href="logout.php">Logout</a>
+                    <a href="../logout.php">Logout</a>
                 </div>
             </div>
             </div>
@@ -691,22 +691,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="container">
         <!-- MENU PRINCIPAL -->
         <div class="menu-container">
-        <form method="GET"><button type="submit" name="acao" value="adicionar_stock" class="menu-item"><img src="Stock.jpeg"><span class="as">Adicionar Stock</span></button></form>
-        <form method="GET"><button type="submit" name="acao" value="eliminar_stock" class="menu-item"><img src="Stock.jpeg"><span class="as">Eliminar Stock</span></button></form>
-        <form method="GET"><button type="submit" name="acao" value="adicionar_tendencia" class="menu-item"><img src="Tendencia.jpeg"><span class="as">Adicionar Tendência</span></button></form>
-        <form method="GET"><button type="submit" name="acao" value="eliminar_tendencia" class="menu-item"><img src="Tendencia.jpeg"><span class="as">Eliminar Tendência</span></button></form>
-        <form method="GET"><button type="submit" name="acao" value="adicionar_tipo" class="menu-item"><img src="tipo.jpeg"><span class="as">Adicionar Tipo</span></button></form>
-        <form method="GET"><button type="submit" name="acao" value="eliminar_tipo" class="menu-item"><img src="tipo.jpeg"><span class="as">Eliminar Tipo</span></button></form>
-        <form method="GET"><button type="submit" name="acao" value="atualizar_tipo" class="menu-item"><img src="tipo.jpeg"><span class="as">Atualizar Tipo</span></button></form>
-        <form method="GET"><button type="submit" name="acao" value="nova_colecao" class="menu-item"><img src="Colecao.jpeg"><span class="as">Adicionar Coleção</span></button></form>
-        <form method="GET"><button type="submit" name="acao" value="eliminar_colecao" class="menu-item"><img src="Colecao.jpeg"><span class="as">Eliminar Coleção</span></button></form>
-        <form method="GET"><button type="submit" name="acao" value="atualizar_colecao" class="menu-item"><img src="Colecao.jpeg"><span class="as">Atualizar Coleção</span></button></form>
-        <form method="GET"><button type="submit" name="acao" value="novo_produto" class="menu-item"><img src="Produto.png"><span class="as">Adicionar Produto</span></button></form>
-        <form method="GET"><button type="submit" name="acao" value="eliminar_produto" class="menu-item"><img src="Produto.png"><span class="as">Eliminar Produto</span></button></form>
-        <form method="GET"><button type="submit" name="acao" value="atualizar_produto" class="menu-item"><img src="Produto.png"><span class="as">Atualizar Produto</span></button></form>
-        <form method="GET"><button type="submit" name="acao" value="novo_utilizador" class="menu-item"><img src="user.png"><span class="as">Adicionar Utilizador</span></button></form>
-        <form method="GET"><button type="submit" name="acao" value="eliminar_utilizador" class="menu-item"><img src="user.png"><span class="as">Eliminar Utilizador</span></button></form>
-        <form method="GET"><button type="submit" name="acao" value="atualizar_utilizador" class="menu-item"><img src="user.png"><span class="as">Atualizar Utilizador</span></button></form>
+        <form method="GET"><button type="submit" name="acao" value="adicionar_stock" class="menu-item"><img src="../imagemoperacoes/Stock.jpeg"><span class="as">Adicionar Stock</span></button></form>
+        <form method="GET"><button type="submit" name="acao" value="eliminar_stock" class="menu-item"><img src="../imagemoperacoes/Stock.jpeg"><span class="as">Eliminar Stock</span></button></form>
+        <form method="GET"><button type="submit" name="acao" value="adicionar_tendencia" class="menu-item"><img src="../imagemoperacoes/Tendencia.jpeg"><span class="as">Adicionar Tendência</span></button></form>
+        <form method="GET"><button type="submit" name="acao" value="eliminar_tendencia" class="menu-item"><img src="../imagemoperacoes/Tendencia.jpeg"><span class="as">Eliminar Tendência</span></button></form>
+        <form method="GET"><button type="submit" name="acao" value="adicionar_tipo" class="menu-item"><img src="../imagemoperacoes/tipo.jpeg"><span class="as">Adicionar Tipo</span></button></form>
+        <form method="GET"><button type="submit" name="acao" value="eliminar_tipo" class="menu-item"><img src="../imagemoperacoes/tipo.jpeg"><span class="as">Eliminar Tipo</span></button></form>
+        <form method="GET"><button type="submit" name="acao" value="atualizar_tipo" class="menu-item"><img src="../imagemoperacoes/tipo.jpeg"><span class="as">Atualizar Tipo</span></button></form>
+        <form method="GET"><button type="submit" name="acao" value="nova_colecao" class="menu-item"><img src="../imagemoperacoes/Colecao.jpeg"><span class="as">Adicionar Coleção</span></button></form>
+        <form method="GET"><button type="submit" name="acao" value="eliminar_colecao" class="menu-item"><img src="../imagemoperacoes/Colecao.jpeg"><span class="as">Eliminar Coleção</span></button></form>
+        <form method="GET"><button type="submit" name="acao" value="atualizar_colecao" class="menu-item"><img src="../imagemoperacoes/Colecao.jpeg"><span class="as">Atualizar Coleção</span></button></form>
+        <form method="GET"><button type="submit" name="acao" value="novo_produto" class="menu-item"><img src="../imagemoperacoes/Produto.png"><span class="as">Adicionar Produto</span></button></form>
+        <form method="GET"><button type="submit" name="acao" value="eliminar_produto" class="menu-item"><img src="../imagemoperacoes/Produto.png"><span class="as">Eliminar Produto</span></button></form>
+        <form method="GET"><button type="submit" name="acao" value="atualizar_produto" class="menu-item"><img src="../imagemoperacoes/Produto.png"><span class="as">Atualizar Produto</span></button></form>
+        <form method="GET"><button type="submit" name="acao" value="novo_utilizador" class="menu-item"><img src="../imagemoperacoes/user.png"><span class="as">Adicionar Utilizador</span></button></form>
+        <form method="GET"><button type="submit" name="acao" value="eliminar_utilizador" class="menu-item"><img src="../imagemoperacoes/user.png"><span class="as">Eliminar Utilizador</span></button></form>
+        <form method="GET"><button type="submit" name="acao" value="atualizar_utilizador" class="menu-item"><img src="../imagemoperacoes/user.png"><span class="as">Atualizar Utilizador</span></button></form>
     </div>
 </div>
 

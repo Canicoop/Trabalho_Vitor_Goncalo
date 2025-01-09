@@ -1,5 +1,5 @@
 <?php
-include 'conexao.php';
+include '../conexao.php';
 session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -30,11 +30,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Redirecionar com base no nível do usuário
         if ($row['Nível'] == 1) {
-            header("Location: PaginaInicial.php");
+            header("Location: ../paginaInicial/PaginaInicial.php");
         } elseif ($row['Nível'] == 2) {
-            header("Location: gestor_management.php");
+            header("Location: ../gestor/gestor_management.php");
         } elseif ($row['Nível'] == 3) {
-            header("Location: administrador_management.php");
+            header("Location: ../admin/administrador_management.php");
         }
         exit();
     } else {

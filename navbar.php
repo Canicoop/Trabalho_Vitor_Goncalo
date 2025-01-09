@@ -19,8 +19,8 @@ if ($result_navbar && $result_navbar->num_rows > 0) {
 <nav class="navbar">
     <div class="nav-left">
         <div id="logo">
-            <a href="PaginaInicial.php">
-                <img src="Logo.png" alt="Logo" style="width:10rem;">
+            <a href="../paginaInicial/PaginaInicial.php">
+                <img src="../logo/Logo.png" alt="Logo" style="width:10rem;">
             </a>
         </div>
     </div>
@@ -31,7 +31,7 @@ if ($result_navbar && $result_navbar->num_rows > 0) {
                 <a><?php echo ucfirst($categoria); ?></a>
                 <div class="dropdown-content">
                     <?php foreach ($tipos as $tipo): ?>
-                        <a href="PaginaProduto.php?tipo=<?php echo urlencode($tipo); ?>">
+                        <a href="../paginaProduto/PaginaProduto.php?tipo=<?php echo urlencode($tipo); ?>">
                             <?php echo htmlspecialchars($tipo); ?>
                         </a>
                     <?php endforeach; ?>
@@ -55,21 +55,21 @@ if ($result_navbar && $result_navbar->num_rows > 0) {
                     $sql = "SELECT Imagem FROM users WHERE Username = '{$_SESSION['username']}'";
                     $result = $conexao->query($sql);
                     if ($result && $row = $result->fetch_assoc()) {
-                        $imageURL = 'imagens/' . $row["Imagem"];
+                        $imageURL = '../imagens/' . $row["Imagem"];
                     ?>
                     <img class="user-photo" src="<?php echo $imageURL; ?>" alt="User Photo">
                     <span class="user-name"> <?php echo $_SESSION['username']; ?> </span> ▼
                 </span>
                 <div class="dropdown-content">
-                    <a href="minhas_encomendas.php">Minhas Encomendas</a>
-                    <a href="minha_conta.php">Minha Conta</a>
-                    <a href="logout.php">Logout</a>
+                    <a href="../minhas_encomendas.php">Minhas Encomendas</a>
+                    <a href="../minhaConta/minha_conta.php">Minha Conta</a>
+                    <a href="../logout.php">Logout</a>
                 </div>
                 <?php } ?>
             </div>
         <?php else: ?>
             <div class="icon">
-                <a href="login.php">
+                <a href="../login/login.php">
                     <svg xmlns="http://www.w3.org/2000/svg" color="black" width="30" height="30" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
                         <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
                         <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>

@@ -1,6 +1,6 @@
 <?php
-include 'conexao.php';
-include 'session_check.php';
+include '../conexao.php';
+include '../session_check.php';
 
 // Inicializar variáveis para filtros
 $genero = null;
@@ -53,12 +53,12 @@ $result_produtos = mysqli_query($conexao, $sql);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Produtos</title>
-    <link rel="stylesheet" href="PaginaInicial.css">
+    <link rel="stylesheet" href="../paginaInicial/PaginaInicial.css">
     <link rel="stylesheet" href="paginaproduto.css">
 </head>
 <body>
 
-    <?php include 'navbar.php'; ?>
+    <?php include '../navbar.php'; ?>
 
     <div class="free-shipping-bar">
         FREE SHIPPING ON ALL ORDERS OVER 100€
@@ -92,7 +92,7 @@ $result_produtos = mysqli_query($conexao, $sql);
             <div class="product-card">
                 <div class="product-image">
                     <a href="ProdutoDetalhes.php?Nome=<?php echo $row['Nome']; ?>">
-                        <img src="produtos/<?php echo htmlspecialchars($row['Imagem']); ?>" alt="<?php echo htmlspecialchars($row['Nome']); ?>">
+                        <img src="../produtos/<?php echo htmlspecialchars($row['Imagem']); ?>" alt="<?php echo htmlspecialchars($row['Nome']); ?>">
                     </a>
                 </div>
                 <div class="product-info">
@@ -111,7 +111,7 @@ $result_produtos = mysqli_query($conexao, $sql);
     ?>
     <br><br><br><br>
 
-    <?php include 'footer.php'; ?>
+    <?php include '../footer.php'; ?>
 
 </body>
 </html>
