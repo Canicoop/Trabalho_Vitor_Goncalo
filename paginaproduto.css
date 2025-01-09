@@ -24,8 +24,10 @@
 }
 
 .product-image img {
-    width: 100%;
-    height: auto;
+    width: 250px; /* Defina a largura que você deseja */
+    height: 250px; /* Defina a altura que você deseja */
+    object-fit: cover; /* Garante que a imagem se ajusta sem distorção */
+    border-radius: 8px;
 }
 
 .product-info {

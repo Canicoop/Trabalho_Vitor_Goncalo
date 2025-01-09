@@ -95,9 +95,9 @@ $result_colecao = mysqli_query($conexao, $sql_colecao);
     <div class="containerb">
         <div class="category">
             <a href="PaginaProduto.php?Genero=unisex">
-                <img src="Criança.png" alt="Criança">
+                <img src="Unisexo.webp" alt="Unisexo">
             </a>
-                <p>Criança</p>
+                <p>Unisexo</p>
             </div>
             <div class="category">
                 <a href="PaginaProduto.php?Genero=Masculino">

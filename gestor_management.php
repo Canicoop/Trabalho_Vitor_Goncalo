@@ -81,16 +81,35 @@ if (isset($_POST['adicionar_stock'])) {
 
     elseif (isset($_POST['adicionar_tipo'])) {
         $tipo = trim($_POST['tipo']);
-    
-        if (!empty($tipo)) {
-            $sql = "INSERT INTO tipo (descricao) VALUES (?)";
+        $tipo_tipo = trim($_POST['tipo_tipo']);
+        
+        if (!empty($tipo) && !empty($tipo_tipo)) { // Verifica se os campos não estão vazios
+            
+            // Verificar se já existe um tipo com a mesma descrição
+            $sql = "SELECT id FROM tipo WHERE descricao = ?";
             $stmt = mysqli_prepare($conexao, $sql);
             mysqli_stmt_bind_param($stmt, "s", $tipo);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_store_result($stmt); // Necessário para verificar o número de linhas retornadas
+            
+            if (mysqli_stmt_num_rows($stmt) > 0) {
+                $error = "Erro: O tipo já existe!";
+            } else {
+                // Inserir novo tipo
+                $sql = "INSERT INTO tipo (descricao, tipo) VALUES (?, ?)";
+                $stmt = mysqli_prepare($conexao, $sql);
+                mysqli_stmt_bind_param($stmt, "ss", $tipo, $tipo_tipo);
     
-            if (mysqli_stmt_execute($stmt)) {
-            } 
+                if (mysqli_stmt_execute($stmt)) {
+                    $success = "Tipo adicionado com sucesso!";
+                } else {
+                    $error = "Erro ao adicionar tipo: " . mysqli_error($conexao);
+                }
+            }
+            
             mysqli_stmt_close($stmt);
         } 
+        
     }
     
     // Eliminar Tipo
@@ -111,23 +130,41 @@ if (isset($_POST['adicionar_stock'])) {
         }
     }
     
-                // Atualizar Tipo
-                elseif (isset($_POST['atualizar_tipo'])) {
-                    $tipo_id = intval($_POST['tipo_id']);
-                    $descricao = trim($_POST['descricao']);
-            
-                    if ($tipo_id > 0 && !empty($descricao)) {
-                        $sql = "UPDATE tipo SET descricao = ? WHERE id = ?";
-                        $stmt = mysqli_prepare($conexao, $sql);
-                        mysqli_stmt_bind_param($stmt, "si", $descricao, $tipo_id);
-            
-                        if (mysqli_stmt_execute($stmt)) {
-                            
-                        } 
-            
-                        mysqli_stmt_close($stmt);
-                    }
+    elseif (isset($_POST['atualizar_tipo'])) {
+    
+        $tipo_id = intval($_POST['tipo_id']);
+        $descricao = trim($_POST['descricao']);
+        $tipo_tipo = trim($_POST['tipo_tipo']);
+    
+        if ($tipo_id > 0 && !empty($descricao) && !empty($tipo_tipo)) {
+            // Verificar se já existe outro tipo com a mesma descrição
+            $sql = "SELECT id FROM tipo WHERE descricao = ? AND id != ?";
+            $stmt = mysqli_prepare($conexao, $sql);
+            mysqli_stmt_bind_param($stmt, "si", $descricao, $tipo_id);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_store_result($stmt);
+    
+            if (mysqli_stmt_num_rows($stmt) > 0) {
+                echo "<p style='color:red;'>Erro: Já existe um tipo com esta descrição!</p>";
+            } else {
+                // Atualizar o tipo
+                $sql = "UPDATE tipo SET descricao = ?, tipo = ? WHERE id = ?";
+                $stmt = mysqli_prepare($conexao, $sql);
+                mysqli_stmt_bind_param($stmt, "ssi", $descricao, $tipo_tipo, $tipo_id);
+    
+                if (mysqli_stmt_execute($stmt)) {
+                    echo "<p style='color:green;'>Tipo atualizado com sucesso!</p>";
+                } else {
+                    echo "<p style='color:red;'>Erro ao atualizar tipo: " . mysqli_error($conexao) . "</p>";
                 }
+            }
+    
+            mysqli_stmt_close($stmt);
+        } else {
+            echo "<p style='color:red;'>Erro: Todos os campos são obrigatórios!</p>";
+        }
+     }
+    
             
     
     elseif (isset($_POST['eliminar_tendencia'])) {
@@ -248,53 +285,46 @@ if (isset($_POST['adicionar_stock'])) {
 
                 
                 if (isset($_POST['adicionar_produto'])) {
-                    // Conexão ao banco já deve estar estabelecida ($conexao)
-                
-                    // Sanitização e Validação dos dados
-                    $nome = mysqli_real_escape_string($conexao, $_POST['nome']);
-                    $preco = floatval($_POST['preco']);
-                    $stock = intval($_POST['stock']);
-                    $tipo_id = intval($_POST['tipo']);
-                    $genero = mysqli_real_escape_string($conexao, $_POST['genero']);
-                    $colecao_id = intval($_POST['colecao']);
-                
-                    // Verificar se o tipo_id realmente existe na tabela "tipo"
-                    $checkTipo = mysqli_query($conexao, "SELECT id FROM tipo WHERE id = $tipo_id");
-                    if (mysqli_num_rows($checkTipo) == 0) {
-                        die("Erro: O tipo selecionado não existe.");
-                    }
-                
-                    // Verificar se a coleção existe
-                    $checkColecao = mysqli_query($conexao, "SELECT id FROM colecoes WHERE id = $colecao_id");
-                    if (mysqli_num_rows($checkColecao) == 0) {
-                        die("Erro: A coleção selecionada não existe.");
-                    }
+
+                                        // Sanitização e Validação dos dados
+                                        $nome = mysqli_real_escape_string($conexao, $_POST['nome']);
+                                        $preco = floatval($_POST['preco']);
+                                        $stock = intval($_POST['stock']);
+                                        $tipo_id = intval($_POST['tipo']);
+                                        $genero = mysqli_real_escape_string($conexao, $_POST['genero']);
+                                        $colecao_id = intval($_POST['colecao']);
+                                        $tamanho = intval($_POST['tamanho']);
+
+
+             
+
+
                 
                     // Validação e upload da imagem
                             $targetDir = "produtos/";
                             $fileName = basename($_FILES["imagem"]["name"]);
                             $targetFilePath = $targetDir . $fileName;
 
-                     $sql = "SELECT * FROM produtos WHERE Nome = ?";
-                    $stmt = mysqli_prepare($conexao, $sql);
-                    mysqli_stmt_bind_param($stmt, "s", $nome);
-                    mysqli_stmt_execute($stmt);
-                    $result = mysqli_stmt_get_result($stmt);
-                    
-                   
-                        if (mysqli_num_rows($result) > 0) {
-                            $error = "Produto já existe!";
-                        } 
+                            $sql = "SELECT * FROM produtos WHERE Nome = ? AND tamanho = ?";
+                            $stmt = mysqli_prepare($conexao, $sql);
+                            mysqli_stmt_bind_param($stmt, "si", $nome, $tamanho);
+                            mysqli_stmt_execute($stmt);
+                            $result = mysqli_stmt_get_result($stmt);
+            
+                            if (mysqli_num_rows($result) > 0) {
+                                echo "Erro: Produto já existe!";
+            
+                            }
 
                             // Move a imagem para a pasta
-                            if (move_uploaded_file($_FILES["imagem"]["tmp_name"], $targetFilePath)) {
+                            elseif (move_uploaded_file($_FILES["imagem"]["tmp_name"], $targetFilePath)) {
                                 // Consulta corrigida
-                                $sql = "INSERT INTO produtos (Nome, Preco, tipo_id, Imagem, Stock, Colecao, Genero) 
-                                        VALUES (?, ?, ?, ?, ?, ?, ?)";
+                                $sql = "INSERT INTO produtos (Nome, Preco, tipo_id, Imagem, Stock, Colecao, Genero, tamanho) 
+                                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
                                 if ($stmt = mysqli_prepare($conexao, $sql)) {
                                     // Correção na ordem dos parâmetros e tipos
-                                    mysqli_stmt_bind_param($stmt, "sdissis",  $nome,$preco,$tipo_id, $fileName,$stock,$colecao_id,$genero);
+                                    mysqli_stmt_bind_param($stmt, "sdissisi",  $nome,$preco,$tipo_id, $fileName,$stock,$colecao_id,$genero,$tamanho);
                                     
                                     if (mysqli_stmt_execute($stmt)) {
                                     
@@ -334,6 +364,8 @@ if (isset($_POST['adicionar_stock'])) {
     $stock = $_POST['stock'];
     $colecao = $_POST['colecao'];
     $genero = $_POST['genero'];
+    $tamanho = $_POST['tamanho'];
+
     
     // Buscar a imagem atual
     $query = "SELECT Imagem FROM produtos WHERE id = ?";
@@ -361,19 +393,26 @@ if (isset($_POST['adicionar_stock'])) {
             if (!empty($imagem_antiga) && file_exists($caminho_imagem_antiga)) {
                 unlink($caminho_imagem_antiga);
             }
-        } else {
-            echo "Erro ao mover o arquivo de imagem.";
         }
-    } else {
-        echo "Nenhuma imagem foi enviada ou o arquivo está vazio.";
+    } 
+
+    $sql = "SELECT * FROM produtos WHERE Nome = ? AND tamanho = ?";
+    $stmt = mysqli_prepare($conexao, $sql);
+    mysqli_stmt_bind_param($stmt, "si", $nome_produto, $tamanho);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if (mysqli_num_rows($result) > 0) {
+        echo "Erro: Produto já existe!";
+
     }
 
     // Verifique se o nome do arquivo não está vazio
-    if (!empty($fileName)) {
+    elseif (!empty($fileName)) {
         // Atualiza o produto no banco de dados com a nova imagem
-        $sql = "UPDATE produtos SET Nome = ?, Preco = ?, tipo_id = ?, Stock = ?, Colecao = ?, Genero = ?, Imagem = ? WHERE id = ?";
+        $sql = "UPDATE produtos SET Nome = ?, Preco = ?, tipo_id = ?, Stock = ?, Colecao = ?, Genero = ?, Imagem = ?, tamanho = ? WHERE id = ?";
         $stmt = mysqli_prepare($conexao, $sql);
-        mysqli_stmt_bind_param($stmt, "sdiiissi", $nome_produto, $preco, $tipo_id, $stock, $colecao, $genero, $fileName, $produto_id);
+        mysqli_stmt_bind_param($stmt, "sdiiisssi", $nome_produto, $preco, $tipo_id, $stock, $colecao, $genero, $fileName, $tamanho, $produto_id);
 
         if (mysqli_stmt_execute($stmt)) {
             echo "Produto atualizado com sucesso!";
@@ -635,6 +674,16 @@ if (isset($_POST['adicionar_stock'])) {
                 <form method="POST">
                 <label for="id">Tipo:</label>
                     <input name="tipo" type="text" name="id" required>
+                <select name="tipo_tipo">
+                <option selected>Selecione uma opção</option>
+                <?php
+                        $query = "SELECT * FROM tipo GROUP BY tipo;";
+                        $result = mysqli_query($conexao, $query);
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            echo '<option >' . $row['tipo'] . '</option>';
+                        }
+                        ?>
+                    </select>
                     <button type="submit" name="adicionar_tipo">Adicionar</button>
                 </form>
 
@@ -656,49 +705,70 @@ if (isset($_POST['adicionar_stock'])) {
                 </form>
 
                 <?php } elseif ($acao === 'atualizar_tipo') { ?>
-                    <h3>Atualizar Tipo</h3>
-                <form method="POST">
-                    <label for="id">Tipo:</label>
-                    <select name="tipo" onchange="this.form.submit()">
-                        <option selected>Selecione uma opção</option>
-                        <?php
-                        $query = "SELECT * FROM tipo";
-                        $result = mysqli_query($conexao, $query);
-                        while ($row = mysqli_fetch_assoc($result)) {
-                            // Se foi selecionado, manter a seleção
-                            $selected = (isset($_POST['tipo']) && $_POST['tipo'] == $row['id']) ? 'selected' : '';
-                            echo '<option value="' . $row['id'] . '" ' . $selected . '>' . $row['descricao'] . '</option>';
-                        }
-                        ?>
-                    </select>
-                </form>
+    <h3>Atualizar Tipo</h3>
 
+    <!-- Formulário para selecionar o tipo -->
+    <form method="POST">
+        <label for="id">Tipo:</label>
+        <select name="tipo" onchange="this.form.submit()">
+            <option selected>Selecione uma opção</option>
+            <?php
+            $query = "SELECT * FROM tipo";
+            $result = mysqli_query($conexao, $query);
+            while ($row = mysqli_fetch_assoc($result)) {
+                $selected = (isset($_POST['tipo']) && $_POST['tipo'] == $row['id']) ? 'selected' : '';
+                echo '<option value="' . $row['id'] . '" ' . $selected . '>' . $row['descricao'] . '</option>';
+            }
+            ?>
+        </select>
+    </form>
+
+    <?php
+    $descricao = "";
+    $tipo_tipo = "";
+    $tipo_id = "";
+
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['tipo'])) {
+        $tipo_id = intval($_POST['tipo']);
+
+        // Buscar a descrição e o tipo do item selecionado
+        $query = "SELECT descricao, tipo FROM tipo WHERE id = ?";
+        $stmt = mysqli_prepare($conexao, $query);
+        mysqli_stmt_bind_param($stmt, "i", $tipo_id);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
+        if ($row = mysqli_fetch_assoc($result)) {
+            $descricao = $row['descricao'];
+            $tipo_tipo = $row['tipo'];
+        }
+        mysqli_stmt_close($stmt);
+    }
+    ?>
+
+    <?php if (!empty($descricao)): ?>
+        <form method="POST">
+            <input type="hidden" name="tipo_id" value="<?php echo htmlspecialchars($tipo_id); ?>">
+
+            <label for="descricao">Nova Descrição do Tipo:</label>
+            <input id="descricao" name="descricao" type="text" value="<?php echo htmlspecialchars($descricao); ?>" required>
+
+            <label for="tipo_tipo">Novo Nome do Tipo:</label>
+            <select name="tipo_tipo">
+                <option selected>Selecione uma opção</option>
                 <?php
-                $descricao = ""; // Variável para armazenar a descrição do tipo selecionado
-
-                if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['tipo'])) {
-                    $tipo_id = $_POST['tipo'];
-
-                    // Consulta para obter a descrição do tipo selecionado
-                    $query = "SELECT descricao FROM tipo WHERE id = $tipo_id";
-                    $result = mysqli_query($conexao, $query);
-                    
-                    if ($row = mysqli_fetch_assoc($result)) {
-                        $descricao = $row['descricao'];
-                    }
+                $query = "SELECT DISTINCT tipo FROM tipo";
+                $result = mysqli_query($conexao, $query);
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $selected = ($row['tipo'] == $tipo_tipo) ? 'selected' : '';
+                    echo '<option value="' . htmlspecialchars($row['tipo']) . '" ' . $selected . '>' . htmlspecialchars($row['tipo']) . '</option>';
                 }
                 ?>
+            </select>
 
-                        <form method="POST">
-                            <!-- Enviar o ID do tipo como um campo oculto -->
-                            <input type="hidden" name="tipo_id" value="<?php echo htmlspecialchars($tipo_id); ?>">
-                            
-                            <label for="descricao">Novo Nome do Tipo:</label>
-                            <input id="descricao" name="descricao" type="text" value="<?php echo htmlspecialchars($descricao); ?>" required>
-
-                            <button type="submit" name="atualizar_tipo">Atualizar</button>
-                        </form>
-
+            <button type="submit" name="atualizar_tipo">Atualizar</button>
+        </form>
+    <?php endif; ?>
                 
             <?php } elseif ($acao === 'adicionar_tendencia') { ?>
                 <h3>Adicionar Tendência</h3>
@@ -862,6 +932,7 @@ if (isset($_POST['adicionar_stock'])) {
             <option value="">Selecione uma opção</option>
             <option value="Masculino">Masculino</option>
             <option value="Feminino">Feminino</option>
+            <option value="Unisexo">Unisexo</option>
         </select>
 
         <label for="colecao">Coleção:</label>
@@ -869,6 +940,18 @@ if (isset($_POST['adicionar_stock'])) {
             <option selected>Selecione uma opção</option>
             <?php
             $query = "SELECT * FROM colecoes";
+            $result = mysqli_query($conexao, $query);
+            while ($row = mysqli_fetch_assoc($result)) {
+                echo '<option value="' . $row['id'] . '">' . $row['descricao'] . '</option>';
+            }
+            ?>
+        </select>
+
+        <label for="tamanho">Tamanho:</label>
+        <select name="tamanho">
+            <option selected>Selecione uma opção</option>
+            <?php
+            $query = "SELECT * FROM tamanho";
             $result = mysqli_query($conexao, $query);
             while ($row = mysqli_fetch_assoc($result)) {
                 echo '<option value="' . $row['id'] . '">' . $row['descricao'] . '</option>';
@@ -929,12 +1012,13 @@ if (isset($_POST['adicionar_stock'])) {
                     $stock = "";
                     $colecao = "";
                     $genero = "";
+                    $tamanho ="";
 
                     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['colecao']) && !empty($_POST['colecao'])) {
                         $id = intval($_POST['colecao']); // Garante que é um número inteiro
 
                         // Busca os dados do produto
-                        $query = "SELECT Nome, Preco, tipo_id, Imagem, Stock, Colecao, Genero FROM produtos WHERE id = $id";
+                        $query = "SELECT Nome, Preco, tipo_id, Imagem, Stock, Colecao, Genero,tamanho FROM produtos WHERE id = $id";
                         $result = mysqli_query($conexao, $query);
 
                         if ($row = mysqli_fetch_assoc($result)) {
@@ -945,6 +1029,7 @@ if (isset($_POST['adicionar_stock'])) {
                             $stock = $row['Stock'];
                             $colecao = $row['Colecao'];
                             $genero = $row['Genero'];
+                            $tamanho =$row['tamanho'];
                         }
                     }
 
@@ -988,6 +1073,18 @@ if (isset($_POST['adicionar_stock'])) {
 
                             <label for="genero">Gênero:</label>
                             <input id="genero" name="genero" type="text" value="<?php echo htmlspecialchars($genero); ?>" required>
+
+                            <label for="tamanho">Tipo:</label>
+                            <select id="tamanho" name="tamanho">
+                                <?php
+                                $query = "SELECT id, descricao FROM tamanho";
+                                $result = mysqli_query($conexao, $query);
+                                while ($row = mysqli_fetch_assoc($result)) {
+                                    $selected = ($tamanho == $row['id']) ? 'selected' : '';
+                                    echo '<option value="' . $row['id'] . '" ' . $selected . '>' . $row['descricao'] . '</option>';
+                                }
+                                ?>
+                            </select>
 
                             <label for="imagem">Imagem Atual:</label>
                             <div>

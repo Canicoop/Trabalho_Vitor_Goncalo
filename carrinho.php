@@ -10,29 +10,49 @@ if (!isset($_SESSION['user_id'])) {
 // ID do usuário logado
 $user_id = $_SESSION['user_id'];
 
-// Adicionar ao carrinho
-if (isset($_GET['add_to_cart'])) {
-    $produto_id = intval($_GET['add_to_cart']);
+if (isset($_GET['produto_nome']) && isset($_GET['tamanho'])) {
+    $produto_nome = $_GET['produto_nome'];
+    $tamanho_id = intval($_GET['tamanho']);
 
-    // Verificar se o produto já está no carrinho
-    $query = "SELECT * FROM carrinho WHERE id_Cliente = $user_id AND id_Produto = $produto_id";
-    $result = $conexao->query($query);
+    // Buscar o ID correto do produto com base no nome e tamanho
+    $query = "SELECT id FROM produtos WHERE Nome = ? AND tamanho = ?";
+    $stmt = $conexao->prepare($query);
+    $stmt->bind_param("si", $produto_nome, $tamanho_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
-        // Atualizar a quantidade do produto
-        $update_query = "UPDATE carrinho SET quantidade = quantidade + 1 WHERE id_Cliente = $user_id AND id_Produto = $produto_id";
-        $conexao->query($update_query);
-    } else {
-        // Inserir um novo item no carrinho
-        $insert_query = "INSERT INTO carrinho (id_Cliente, id_Produto, quantidade) VALUES ($user_id, $produto_id, 1)";
-        $conexao->query($insert_query);
+        $produto = $result->fetch_assoc();
+        $produto_id = $produto['id']; // Agora temos o ID correto do produto
+    } 
+
+    if (isset($produto_id)) { // Só roda se o ID for encontrado
+        // Verificar se o produto já está no carrinho
+        $query = "SELECT * FROM carrinho WHERE id_Cliente = ? AND id_Produto = ?";
+        $stmt = $conexao->prepare($query);
+        $stmt->bind_param("ii", $user_id, $produto_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    
+        if ($result->num_rows > 0) {
+            // Atualizar a quantidade do produto no carrinho
+            $update_query = "UPDATE carrinho SET quantidade = quantidade + 1 WHERE id_Cliente = ? AND id_Produto = ?";
+            $stmt = $conexao->prepare($update_query);
+            $stmt->bind_param("ii", $user_id, $produto_id);
+            $stmt->execute();
+        } else {
+            // Inserir um novo item no carrinho
+            $insert_query = "INSERT INTO carrinho (id_Cliente, id_Produto, quantidade) VALUES (?, ?, 1)";
+            $stmt = $conexao->prepare($insert_query);
+            $stmt->bind_param("ii", $user_id, $produto_id);
+            $stmt->execute();
+        }
+    
+        // Redirecionamento para evitar reenvios acidentais
+        header('Location: carrinho.php');
+        exit;
     }
-
-    // Redirecionar para evitar múltiplos cliques
-    header('Location: carrinho.php');
-    exit;
 }
-
 
 
 // Verifica se o usuário está logado
@@ -44,12 +64,16 @@ $user_id = $_SESSION['user_id'];
 
 // Obter os itens do carrinho do banco de dados
 $query = "
-    SELECT c.id AS carrinho_id, p.Nome, p.Preco, p.Imagem,c.quantidade
+    SELECT c.id AS carrinho_id, p.Nome, p.Preco, p.Imagem, c.quantidade, t.descricao AS tamanho
     FROM carrinho c
     INNER JOIN produtos p ON c.id_Produto = p.id
-    WHERE c.id_Cliente = $user_id
+    INNER JOIN tamanho t ON p.tamanho = t.id
+    WHERE c.id_Cliente = ?
 ";
-$result = $conexao->query($query);
+$stmt = $conexao->prepare($query);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
 
 // Exibir os itens na página
 
@@ -88,9 +112,7 @@ $result_user = $conexao->query($query_user);
 if ($result_user && $result_user->num_rows > 0) {
     $user_data = $result_user->fetch_assoc();
     $user_name = htmlspecialchars($user_data['Nome']); // Nome do usuário
-} else {
-    $user_name = "Desconhecido"; // Valor padrão caso não encontre o usuário
-}
+} 
 
 
 
@@ -114,7 +136,7 @@ if ($result_user && $result_user->num_rows > 0) {
         <td><h1>Carrinho de <?php echo $user_name; ?></h1></td>
         <td>
             <div class="icon">
-                <a href="login.php">
+                <a href="logout.php">
                     <svg xmlns="http://www.w3.org/2000/svg" color="black" width="30" height="30" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M10.146 12.354a.5.5 0 0 1 0-.708L12.793 9H5.5a.5.5 0 0 1 0-1h7.293l-2.647-2.646a.5.5 0 0 1 .708-.708l3.5 3.5a.5.5 0 0 1 0 .708l-3.5 3.5a.5.5 0 0 1-.708 0z"/>
                         <path fill-rule="evenodd" d="M13 14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-7a2 2 0 0 0-2 2v1a.5.5 0 0 1-1 0V4a3 3 0 0 1 3-3h7a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-7a3 3 0 0 1-3-3v-1a.5.5 0 0 1 1 0v1a2 2 0 0 0 2 2h7z"/>
@@ -144,7 +166,7 @@ if ($result_user && $result_user->num_rows > 0) {
                 ?>
                     <tr>
                         <td><img src="produtos/<?php echo htmlspecialchars($row['Imagem']); ?>" alt="<?php echo htmlspecialchars($row['Nome']); ?>" style="width: 50px;"></td>
-                        <td><?php echo htmlspecialchars($row['Nome']); ?></td>
+                        <td><?php echo htmlspecialchars($row['Nome']); ?> (<?php echo htmlspecialchars($row['tamanho']); ?>)</td>
                         <td><?php echo number_format($row['Preco'], 2, ',', '.'); ?>€</td>
                         <td>
                             <!-- Formulário para alterar a quantidade -->
@@ -170,8 +192,6 @@ if ($result_user && $result_user->num_rows > 0) {
                 </tr>
             </tfoot>
         </table>
-    <?php else: ?>
-        <p>Seu carrinho está vazio.</p>
     <?php endif; ?>
     <br>
     <br>

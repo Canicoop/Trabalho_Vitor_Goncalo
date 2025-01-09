@@ -16,11 +16,15 @@ if (isset($_GET['tipo'])) {
     $tipo_nome = mysqli_real_escape_string($conexao, $_GET['tipo']); // Escapar o valor do parâmetro para evitar SQL injection
 }
 
-// Construir a consulta SQL com base nos filtros recebidos
-$sql = "SELECT * FROM produtos WHERE 1=1"; // "1=1" facilita a adição dinâmica de condições
+// Inicializa a consulta SQL
+$sql = "SELECT * FROM produtos WHERE 1=1"; // 1=1 facilita a adição dinâmica de condições
+
+// Adicionar filtro de gênero, se fornecido
 if ($genero) {
     $sql .= " AND genero = '$genero'";
 }
+
+// Adicionar filtro de tipo, se fornecido
 if ($tipo_nome) {
     // Buscar o ID do tipo correspondente na tabela "tipo"
     $query_tipo = "SELECT id FROM tipo WHERE descricao = '$tipo_nome'";
@@ -29,12 +33,15 @@ if ($tipo_nome) {
     if ($result_tipo && mysqli_num_rows($result_tipo) > 0) {
         $row_tipo = mysqli_fetch_assoc($result_tipo);
         $tipo_id = $row_tipo['id'];
-        $sql .= " AND tipo_id = $tipo_id";
+        $sql .= " AND tipo_id = $tipo_id"; // Filtra pelos tipos
     } else {
         // Caso o tipo não exista, exibe mensagem
         $tipo_nome = null; // Não filtrar por tipo
     }
 }
+
+// Adicionar GROUP BY se necessário
+$sql .= " GROUP BY Nome"; // Agrupa pelo nome dos produtos
 
 // Executar a consulta final
 $result_produtos = mysqli_query($conexao, $sql);
@@ -84,7 +91,7 @@ $result_produtos = mysqli_query($conexao, $sql);
             ?>
             <div class="product-card">
                 <div class="product-image">
-                    <a href="ProdutoDetalhes.php?id=<?php echo $row['id']; ?>">
+                    <a href="ProdutoDetalhes.php?Nome=<?php echo $row['Nome']; ?>">
                         <img src="produtos/<?php echo htmlspecialchars($row['Imagem']); ?>" alt="<?php echo htmlspecialchars($row['Nome']); ?>">
                     </a>
                 </div>
@@ -92,7 +99,6 @@ $result_produtos = mysqli_query($conexao, $sql);
                     <h2 class="product-name"><?php echo htmlspecialchars($row['Nome']); ?></h2>
                     <p class="product-price"><?php echo number_format($row['Preco'], 2, ',', '.'); ?>€</p>
                     <p class="product-stock">Disponível: <?php echo $row['Stock']; ?> Unidades</p>
-                    <a href="carrinho.php?add_to_cart=<?php echo $row['id']; ?>" class="product-btn">Adicionar ao Carrinho</a>
                 </div>
             </div>
             <?php
