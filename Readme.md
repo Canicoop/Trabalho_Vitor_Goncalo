@@ -31,14 +31,13 @@ Este projeto consiste no desenvolvimento de uma loja online especializada em art
 ## 🚀 Instalação
 
 1. Clone o repositório para a sua máquina local:
-   ```bash
-   git clone https://github.com/seu-usuario/gonvi.git
-   ```
+   no git bash
+   "[git clone https://github.com/seu-usuario/gonvi.git](https://github.com/Canicoop/Trabalho_Vitor_Goncalo.git)"
 
 2. Configure o servidor web (recomendado: Apache como o xampp e também tem que ter ligado a função mysql) e assegure-se de que o PHP está corretamente instalado.
 
 3. Importe o base de dados:
-   - Localize o arquivo `database.sql` na raiz do projeto.
+   - Localize o arquivo `loja_roupa.sql` na raiz do projeto.
    - vá ao phpmyadmin e importe o proejto depois de cirar a base de dados loja_roupa.
 
 4. Configure as variáveis de ambiente no arquivo `conexao.php` para conectar ao base de dados e ajustar outros parâmetros, como credenciais para envio de emails.
