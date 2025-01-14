@@ -32,7 +32,7 @@ Este projeto consiste no desenvolvimento de uma loja online especializada em art
 
 1. Clone o repositório para a sua máquina local:
    no git bash
-   "[git clone https://github.com/seu-usuario/gonvi.git](https://github.com/Canicoop/Trabalho_Vitor_Goncalo.git)"
+   https://github.com/Canicoop/Trabalho_Vitor_Goncalo.git
 
 2. Configure o servidor web (recomendado: Apache como o xampp e também tem que ter ligado a função mysql) e assegure-se de que o PHP está corretamente instalado.
 
@@ -55,6 +55,7 @@ Este projeto consiste no desenvolvimento de uma loja online especializada em art
 4. Finalize a compra para gerar a encomenda coloque um email verdadeiro para estar correto.
 
 
-![image](https://github.com/user-attachments/assets/79f4cc74-9ab8-4398-9b70-7459321e318d)
+![image](https://github.com/user-attachments/assets/4464e6c3-d77f-4c6f-a8ea-6e9b73fc9c98)
+
 
 
