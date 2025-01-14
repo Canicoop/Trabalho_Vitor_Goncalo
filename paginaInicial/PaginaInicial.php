@@ -38,7 +38,6 @@ $result_colecao = mysqli_query($conexao, $sql_colecao);
         dropdown.classList.toggle('show');
     });
 
-    // Fechar o menu se o usuário clicar fora dele
     window.addEventListener('click', function(e) {
         if (!dropdown.contains(e.target) && !menuToggle.contains(e.target)) {
             dropdown.classList.remove('show');
@@ -59,7 +58,8 @@ $result_colecao = mysqli_query($conexao, $sql_colecao);
         <?php if ($result_colecao && mysqli_num_rows($result_colecao) > 0): ?>
             <?php while ($row = mysqli_fetch_assoc($result_colecao)): ?>
                 <div class="item">
-                    <img src="../colecoes/<?php echo htmlspecialchars($row['Imagem']); ?>" alt="<?php echo htmlspecialchars($row['descricao']); ?>">
+                <a href="../paginaProduto/PaginaProduto.php?Colecao=<?php echo urlencode($row['descricao']); ?>">
+                    <img src="../colecoes/<?php echo htmlspecialchars($row['Imagem']); ?>" alt="<?php echo htmlspecialchars($row['descricao']); ?>"></a>
                     <div class="label"><?php echo htmlspecialchars($row['descricao']); ?></div>
                 </div>
             <?php endwhile; ?>
@@ -71,22 +71,25 @@ $result_colecao = mysqli_query($conexao, $sql_colecao);
     <br><br><br><br>
 
     <h1 class="texto">Tendências desta semana</h1>
-    <br><br>
-    <div class="container">
-        <?php if ($result_tendencia && $result_tendencia->num_rows > 0): ?>
-            <?php while ($produto_tendencia = $result_tendencia->fetch_assoc()): ?>
-                <div class="item">
-                <img src="../produtos/<?php echo htmlspecialchars($produto_tendencia['Imagem']); ?>" alt="<?php echo $produto_tendencia['nome']; ?>">
-                    <div class="label"><?php echo $produto_tendencia['nome']; ?></div>
-                    <div class="price"><?php echo number_format($produto_tendencia['preco'], 2, ',', ' ') . ' €'; ?></div>
-                </div>
-            <?php endwhile; ?>
-        <?php else: ?>
-            <p>Não há tendências disponíveis no momento.</p>
-        <?php endif; ?>
-    </div>
+<br><br>
+<div class="container">
+    <?php if ($result_tendencia && $result_tendencia->num_rows > 0): ?>
+        <?php while ($produto_tendencia = $result_tendencia->fetch_assoc()): ?>
+            <div class="item">
+                <!-- Link para a página de detalhes -->
+                <a href="../paginaProduto/ProdutoDetalhes.php?Nome=<?php echo urlencode($produto_tendencia['nome']); ?>">
+                    <img src="../produtos/<?php echo htmlspecialchars($produto_tendencia['Imagem']); ?>" alt="<?php echo $produto_tendencia['nome']; ?>">
+                </a>
+                <div class="label"><?php echo $produto_tendencia['nome']; ?></div>
+                <div class="price"><?php echo number_format($produto_tendencia['preco'], 2, ',', ' ') . ' €'; ?></div>
+            </div>
+        <?php endwhile; ?>
+    <?php else: ?>
+        <p>Não há tendências disponíveis no momento.</p>
+    <?php endif; ?>
+</div>
 
-    <br><br><br><br>
+<br><br><br><br>
 
    
 
@@ -94,7 +97,7 @@ $result_colecao = mysqli_query($conexao, $sql_colecao);
     <br><br>
     <div class="containerb">
         <div class="category">
-            <a href="../paginaProduto/PaginaProduto.php?Genero=unisex">
+            <a href="../paginaProduto/PaginaProduto.php?Genero=Unisexo">
                 <img src="../Unisexo.webp" alt="Unisexo">
             </a>
                 <p>Unisexo</p>
@@ -106,7 +109,7 @@ $result_colecao = mysqli_query($conexao, $sql_colecao);
                 <p>Homem</p>
             </div>
             <div class="category">
-                <a href="../paginaProduto/PaginaProduto.php?Genero=feminino">
+                <a href="../paginaProduto/PaginaProduto.php?Genero=Feminino">
                     <img src="../Mulher.png" alt="Mulher">
                 </a>
                 <p>Mulher</p>

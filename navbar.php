@@ -2,6 +2,7 @@
 include 'conexao.php';
 
 
+
 // Query para obter os tipos de produtos, agrupados por categoria
 $sql_navbar = "SELECT descricao, tipo FROM tipo ORDER BY tipo, descricao";
 $result_navbar = mysqli_query($conexao, $sql_navbar);
@@ -43,7 +44,7 @@ if ($result_navbar && $result_navbar->num_rows > 0) {
     <div class="nav-right">
         <?php if (is_logged_in()): ?>
             <div class="icon">
-                <a href="carrinho.php" rel="noopener noreferrer">
+                <a href="../carrinho/carrinho.php" rel="noopener noreferrer">
                     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" color="black" fill="currentColor" class="bi bi-cart" viewBox="0 0 16 16">
                         <path d="M0 1.5A.5.5 0 0 1 .5 1h1a.5.5 0 0 1 .485.379L2.89 5H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 14H4a.5.5 0 0 1-.491-.408L1.01 2H.5a.5.5 0 0 1-.5-.5zM4.415 13h8.17l1.2-6.4H3.314L4.415 13zM5 15a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm9 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
                     </svg>
@@ -61,7 +62,7 @@ if ($result_navbar && $result_navbar->num_rows > 0) {
                     <span class="user-name"> <?php echo $_SESSION['username']; ?> </span> ▼
                 </span>
                 <div class="dropdown-content">
-                    <a href="../minhas_encomendas.php">Minhas Encomendas</a>
+                    <a href="../minhas_encomendas/minhas_encomendas.php">Minhas Encomendas</a>
                     <a href="../minhaConta/minha_conta.php">Minha Conta</a>
                     <a href="../logout.php">Logout</a>
                 </div>

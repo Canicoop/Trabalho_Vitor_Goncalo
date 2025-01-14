@@ -18,73 +18,69 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt = mysqli_prepare($conexao, $sql);
     
         mysqli_stmt_bind_param($stmt, "ii", $quantidade, $produto_id);
-    
-        mysqli_stmt_execute($stmt);
-    
+        
         if (mysqli_stmt_execute($stmt)) {
-            echo "<p class='success'>Dados atualizados com sucesso!</p>";
+            echo "<p class='success'>Stock adicionado com sucesso!</p>";
             header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
-        } else {
-            $error = "Erro ao adicionar Stock: " . mysqli_error($conexao);
         }
-    
-    
         mysqli_stmt_close($stmt);
     }
         
-        elseif (isset($_POST['eliminar_stock'])) {
-            $produto_id = $_POST['produto_id'];  // Usando o nome correto da variável
-            $quantidade = $_POST['quantidade'];
+    elseif (isset($_POST['eliminar_stock'])) {
+        $produto_id = $_POST['produto_id'];  // Usando o nome correto da variável
+        $quantidade = $_POST['quantidade'];
         
+        // Verificar se a quantidade é válida (maior que 0)
+        if ($quantidade > 0) {
             // Consulta SQL para atualizar o stock
-            $sql = "UPDATE produtos SET Stock = Stock - ? WHERE id = ?";
-        
+            $sql = "UPDATE produtos SET Stock = Stock - ? WHERE id = ? AND Stock >= ?";
+            
             $stmt = mysqli_prepare($conexao, $sql);
-        
-            // Associar os parâmetros corretamente (quantidade e id do produto)
-            mysqli_stmt_bind_param($stmt, "ii", $quantidade, $produto_id);
-        
+    
+            // Associar os parâmetros corretamente (quantidade, id do produto e quantidade mínima no estoque)
+            mysqli_stmt_bind_param($stmt, "iii", $quantidade, $produto_id, $quantidade);
+    
             // Executar a consulta
-            mysqli_stmt_execute($stmt);
-        
-            if (mysqli_stmt_execute($stmt)) {
-                echo "<p class='success'>Dados atualizados com sucesso!</p>";
+            if (mysqli_stmt_execute($stmt) && mysqli_stmt_affected_rows($stmt) > 0) {
+                echo "<p class='success'>Stock eliminado com sucesso!</p>";
                 header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
-            } else {
-                $error = "Erro ao eliminar stock: " . mysqli_error($conexao);
             }
-        
-        
+    
             // Fechar a declaração
             mysqli_stmt_close($stmt);
-        } 
+        } else {
+            echo "<p class='error'>Quantidade inválida. Deve ser maior que 0.</p>";
+            header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
+        }
+    }
+    
         
-        elseif (isset($_POST['adicionar_tendencia'])) {
-            // Verificar se um produto foi selecionado
-            if (!isset($_POST['produto_id']) || empty($_POST['produto_id'])) {
-                die("Erro: Selecione um produto.");
-            }
-        
-            $produto_id = intval($_POST['produto_id']); // Converter para número inteiro
-        
-            // Verificar se o produto existe na tabela 'produtos'
-            $checkProduto = mysqli_query($conexao, "SELECT id FROM produtos WHERE id = $produto_id");
-            if (mysqli_num_rows($checkProduto) == 0) {
-            }
-        
+    elseif (isset($_POST['adicionar_tendencia'])) {
+
+        $produto_id = intval($_POST['produto_id']); // Converter para número inteiro
+    
+        // Verificar se o produto já está na tabela 'tendencia'
+        $checkTendencia = mysqli_query($conexao, "SELECT id_produto FROM tendencia WHERE id_produto = $produto_id");
+        if (mysqli_num_rows($checkTendencia) > 0) {
+            echo "<p class='error'>Produto já está Adicionado.</p>";
+            header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
+        } else {
             // Inserir na tabela tendencias
             $sql = "INSERT INTO tendencia (id_produto) VALUES (?)";
             $stmt = mysqli_prepare($conexao, $sql);
             mysqli_stmt_bind_param($stmt, "i", $produto_id);
-            if (mysqli_stmt_execute($stmt)) {
-                echo "<p class='success'>Dados atualizados com sucesso!</p>";
-                header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
-            } else {
-                $error = "Erro ao adicionar tendencia: " . mysqli_error($conexao);
-            }
-            mysqli_stmt_close($stmt);
     
+            if (mysqli_stmt_execute($stmt)) {
+                echo "<p class='success'>Produto Inserido com Sucesso!</p>";
+                header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
+            } 
+    
+            // Fechar a declaração
+            mysqli_stmt_close($stmt);
         }
+    }
+    
+    
     
         elseif (isset($_POST['adicionar_tipo'])) {
             $tipo = trim($_POST['tipo']);
@@ -100,7 +96,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 mysqli_stmt_store_result($stmt); // Necessário para verificar o número de linhas retornadas
                 
                 if (mysqli_stmt_num_rows($stmt) > 0) {
-                    $error = "Erro: O tipo já existe!";
+                    echo "<p class='error'>´Tipo já Existe</p>";
+                    header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
                 } else {
                     // Inserir novo tipo
                     $sql = "INSERT INTO tipo (descricao, tipo) VALUES (?, ?)";
@@ -108,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     mysqli_stmt_bind_param($stmt, "ss", $tipo, $tipo_tipo);
         
                     if (mysqli_stmt_execute($stmt)) {
-                        echo "<p class='success'>Dados atualizados com sucesso!</p>";
+                        echo "<p class='success'>Tipo Adicionado com sucesso!</p>";
                         header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
                     } else {
                         $error = "Erro ao adicionar tipo: " . mysqli_error($conexao);
@@ -132,10 +129,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 mysqli_stmt_bind_param($stmt, "i", $tipo_id);
         
                 if (mysqli_stmt_execute($stmt)) {
-                    echo "<p class='success'>Dados atualizados com sucesso!</p>";
+                    echo "<p class='success'>Tipo eliminado com sucesso!</p>";
             header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
-                } else {
-                    $error = "Erro ao adicionar tipo: " . mysqli_error($conexao);
                 }
         
                 mysqli_stmt_close($stmt);
@@ -157,7 +152,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 mysqli_stmt_store_result($stmt);
         
                 if (mysqli_stmt_num_rows($stmt) > 0) {
-                    echo "<p style='color:red;'>Erro: Já existe um tipo com esta descrição!</p>";
+                    echo "<p class='error'>Tipo já existe!</p>";
+                    header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
                 } else {
                     // Atualizar o tipo
                     $sql = "UPDATE tipo SET descricao = ?, tipo = ? WHERE id = ?";
@@ -165,12 +161,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     mysqli_stmt_bind_param($stmt, "ssi", $descricao, $tipo_tipo, $tipo_id);
         
                     if (mysqli_stmt_execute($stmt)) {
-                        echo "<p class='success'>Dados atualizados com sucesso!</p>";
+                        echo "<p class='success'>Tipo atualizado com sucesso!</p>";
                         header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
-                    } else {
-                        echo "<p class='success'>Dados atualizados com sucesso!</p>";
-                        header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos                
-                        }
+                    }
                 }
         
                 mysqli_stmt_close($stmt);
@@ -196,10 +189,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt = mysqli_prepare($conexao, $sql);
             mysqli_stmt_bind_param($stmt, "i", $produto_id);
             if (mysqli_stmt_execute($stmt)) {
-                echo "<p class='success'>Dados atualizados com sucesso!</p>";
+                echo "<p class='success'>Produto Eliminado com Sucesso</p>";
             header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
-            } else {
-                $error = "Erro ao adicionar tendência: " . mysqli_error($conexao);
             }
             mysqli_stmt_close($stmt);
         
@@ -207,7 +198,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         elseif (isset($_POST['adicionar_colecao'])) {
             $descricao = $_POST['nome_colecao'];
-            $targetDir = "colecoes/";
+            $targetDir = "../colecoes/";
             $fileName = basename($_FILES["imagem_colecao"]["name"]);
             $targetFilePath = $targetDir . $fileName;
     
@@ -217,22 +208,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $stmt = mysqli_prepare($conexao, $sql);
                         mysqli_stmt_bind_param($stmt, "s", $descricao);
                         if (mysqli_stmt_execute($stmt)) {
-                            $success = "Tipo adicionado com sucesso!";
-                        } else {
-                            $error = "Erro ao adicionar tipo: " . mysqli_error($conexao);
-                        }
+                        } 
                         $result = mysqli_stmt_get_result($stmt);
                         
                        
                 if (mysqli_num_rows($result) > 0) {
-                    $error = "Coleção já existe!";
+                    echo "<p class='error'>Coleção já existe!</p>";
+                     header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
                 } else {
                     $sql = "INSERT INTO colecoes (descricao, Imagem) VALUES (?, ?)";
                     $stmt = mysqli_prepare($conexao, $sql);
                         mysqli_stmt_bind_param($stmt, "ss", $descricao, $fileName);
                        mysqli_stmt_execute($stmt);
-                       echo "<p class='success'>Dados atualizados com sucesso!</p>";
-            header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
+                       echo "<p class='success'>Coleção adicionada com sucesso!</p>";
+                    header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
                 }
         }
     }
@@ -248,7 +237,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
                         if ($row = mysqli_fetch_assoc($result)) {
                             $imagem = $row['Imagem'];
-                            $caminho_imagem = "colecoes/" . $imagem;
+                            $caminho_imagem = "../colecoes/" . $imagem;
     
                             // Verifica se a imagem existe e exclui
                             if (file_exists($caminho_imagem)) {
@@ -259,57 +248,71 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         // Excluir a coleção
                         $sql = "DELETE FROM colecoes WHERE id = $id";
                         if (mysqli_query($conexao, $sql)) {
-                            echo "<p class='success'>Dados atualizados com sucesso!</p>";
+                            echo "<p class='success'>Coleção Eliminada com sucesso!</p>";
             header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
-                        } else {
-                            $error = "Erro ao eliminar a coleção!";
-                        }
+                        } 
                     }
     
                     
                     if (isset($_POST['atualizar_colecao'])) {
                         $id = intval($_POST['colecao_id']);
                         $nome = mysqli_real_escape_string($conexao, $_POST['nome_colecao_atualizar']);
-                    
-                        // Buscar a imagem atual
+
+                        if ($id > 0 && !empty($nome)) {
+                        
+                        // Buscar a imagem atual da coleção
                         $query = "SELECT imagem FROM colecoes WHERE id = ?";
                         $stmt = mysqli_prepare($conexao, $query);
                         mysqli_stmt_bind_param($stmt, "i", $id);
                         mysqli_stmt_execute($stmt);
                         $result = mysqli_stmt_get_result($stmt);
-                    
+                        
                         if ($row = mysqli_fetch_assoc($result)) {
                             $imagem_antiga = $row['imagem'];
-                            $caminho_imagem_antiga = "colecoes/" . $imagem_antiga;
+                            $caminho_imagem_antiga = "../colecoes/" . $imagem_antiga;
                         }
                     
+                        // Definir o nome do arquivo de imagem (caso tenha sido enviado um novo arquivo)
                         $fileName = !empty($_FILES["imagem"]["name"]) ? basename($_FILES["imagem"]["name"]) : $imagem_antiga;
-                        $targetFilePath = "colecoes/" . $fileName;
+                        $targetFilePath = "../colecoes/" . $fileName;
                     
+                        // Realizar o upload da nova imagem, se houver
                         if (!empty($_FILES["imagem"]["name"])) {
                             if (move_uploaded_file($_FILES["imagem"]["tmp_name"], $targetFilePath)) {
+                                // Deletar a imagem antiga, se existir
                                 if (!empty($imagem_antiga) && file_exists($caminho_imagem_antiga)) {
                                     unlink($caminho_imagem_antiga);
                                 }
                             }
                         }
                     
-                        // Atualizar a coleção no banco de dados usando Prepared Statements
-                        $sql = "UPDATE colecoes SET descricao = ?, imagem = ? WHERE id = ?";
+                        $sql = "SELECT * FROM colecoes WHERE descricao = ? AND id != ?";
                         $stmt = mysqli_prepare($conexao, $sql);
+                        mysqli_stmt_bind_param($stmt, "si", $nome,$id);
+                        if (mysqli_stmt_execute($stmt)) {
+                        } 
+                        $result = mysqli_stmt_get_result($stmt);
                         
-                        if ($stmt) {
+                       
+                if (mysqli_num_rows($result) > 0) {
+                    echo "<p class='error'>Coleção já existe!</p>";
+                     header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
+                }
+                    
+                       else {
+                     // Se não existir, realiza a atualização da coleção no banco de dados
+                      $sql = "UPDATE colecoes SET descricao = ?, imagem = ? WHERE id = ?";
+                     $stmt = mysqli_prepare($conexao, $sql);
                             mysqli_stmt_bind_param($stmt, "ssi", $nome, $fileName, $id);
                             if (mysqli_stmt_execute($stmt)) {
-                                echo "<p class='success'>Dados atualizados com sucesso!</p>";
-                             header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
-                            } else {
-                                $error = "Erro ao atualizar Coleção: " . mysqli_error($conexao);
-                            }
-                        } 
+                                echo "<p class='success'>Coleção atualizada com sucesso!</p>";
+                                header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
+                            } 
+                        }
                     }
+                }
                     
-    
+                    
                     
                     if (isset($_POST['adicionar_produto'])) {
     
@@ -328,7 +331,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
                     
                         // Validação e upload da imagem
-                                $targetDir = "produtos/";
+                                $targetDir = "../produtos/";
                                 $fileName = basename($_FILES["imagem"]["name"]);
                                 $targetFilePath = $targetDir . $fileName;
     
@@ -339,7 +342,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 $result = mysqli_stmt_get_result($stmt);
                 
                                 if (mysqli_num_rows($result) > 0) {
-                                    echo "Erro: Produto já existe!";
+                                    echo "<p class='error'>Produto já existe!</p>";
+                                    header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
                 
                                 }
     
@@ -354,11 +358,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         mysqli_stmt_bind_param($stmt, "sdissisi",  $nome,$preco,$tipo_id, $fileName,$stock,$colecao_id,$genero,$tamanho);
                                         
                                         if (mysqli_stmt_execute($stmt)) {
-                                            echo "<p class='success'>Dados atualizados com sucesso!</p>";
-            header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
-                                        } else {
-                                            $error = "Erro ao adicionar produto: " . mysqli_error($conexao);
-                                        } 
+                                            echo "<p class='success'>Produto Adicionado com sucesso!</p>";
+                                         header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
+                                        }
                                         mysqli_stmt_close($stmt);
                                     } 
                                 }
@@ -376,10 +378,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     
                                 // Executar a consulta
                                 if (mysqli_stmt_execute($stmt)) {
-                                    echo "<p class='success'>Dados atualizados com sucesso!</p>";
-            header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
-                                } else {
-                                    $error = "Erro ao eliminar produto: " . mysqli_error($conexao);
+                                    echo "<p class='success'>Produto Eliminado com sucesso!</p>";
+                                     header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
                                 }
                     
                                 // Fechar a declaração
@@ -408,7 +408,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         if ($row = mysqli_fetch_assoc($result)) {
             $imagem_antiga = $row['Imagem'];
-            $caminho_imagem_antiga = "produtos/" . $imagem_antiga;
+            $caminho_imagem_antiga = "../produtos/" . $imagem_antiga;
         }
         
         // Definir o nome do arquivo da imagem
@@ -417,7 +417,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Verificar se uma nova imagem foi enviada
         if (!empty($_FILES["imagem"]["name"])) {
             $fileName = basename($_FILES["imagem"]["name"]); // Pega o nome da nova imagem
-            $targetFilePath = "produtos/" . $fileName;
+            $targetFilePath = "../produtos/" . $fileName;
     
             // Verificar se a imagem foi movida corretamente para a pasta
             if (move_uploaded_file($_FILES["imagem"]["tmp_name"], $targetFilePath)) {
@@ -428,14 +428,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         } 
     
-        $sql = "SELECT * FROM produtos WHERE Nome = ? AND tamanho = ?";
+        $sql = "SELECT * FROM produtos WHERE Nome = ? AND tamanho = ? AND id != ?";
         $stmt = mysqli_prepare($conexao, $sql);
-        mysqli_stmt_bind_param($stmt, "si", $nome_produto, $tamanho);
+        mysqli_stmt_bind_param($stmt, "sii", $nome_produto, $tamanho,$id);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
     
         if (mysqli_num_rows($result) > 0) {
-            echo "Erro: Produto já existe!";
+            echo "<p class='error'>Produto já existe!</p>";
+            header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
     
         }
     
@@ -447,12 +448,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             mysqli_stmt_bind_param($stmt, "sdiiisssi", $nome_produto, $preco, $tipo_id, $stock, $colecao, $genero, $fileName, $tamanho, $produto_id);
     
             if (mysqli_stmt_execute($stmt)) {
-                echo "<p class='success'>Dados atualizados com sucesso!</p>";
+                echo "<p class='success'>Produto atualizado com sucesso!</p>";
                 header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
-            } else {
-                $error = "Erro ao atualizado produto: " . mysqli_error($conexao);
-            
-            }}}
+            } 
+        }
     }
 
     elseif (isset($_POST['novo_utilizador'])) {
@@ -464,7 +463,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $nivel = 1;
     
         // Caminho da imagem
-        $targetDir = "imagens/";
+        $targetDir = "../imagens/";
         $fileName = basename($_FILES["imagem"]["name"]);
         $targetFilePath = $targetDir . $fileName;
     
@@ -476,7 +475,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $result = mysqli_stmt_get_result($stmt);
     
         if (mysqli_num_rows($result) > 0) {
-            echo "Utilizador ou email já existe!";
+            echo "<p class='error'>Utilizador já Existe</p>";
+                header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
         } else {
             // Mover a imagem para o diretório
             if (move_uploaded_file($_FILES["imagem"]["tmp_name"], $targetFilePath)) {
@@ -485,7 +485,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 mysqli_stmt_bind_param($stmt, "ssssis", $nome, $email, $username, $password, $nivel, $fileName);
     
                 if (mysqli_stmt_execute($stmt)) {
-                    echo "<p class='success'>Dados atualizados com sucesso!</p>";
+                    echo "<p class='success'>Utilizador criado com Sucesso!</p>";
                 header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
                 } 
                 mysqli_stmt_close($stmt);
@@ -506,7 +506,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 mysqli_stmt_bind_param($stmt, "i", $user_id);
                 
                 if (mysqli_stmt_execute($stmt)) {
-                    echo "<p class='success'>Dados atualizados com sucesso!</p>";
+                    echo "<p class='success'>Utilizador eliminado com sucesso!</p>";
                 header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
                 } 
     
@@ -524,39 +524,56 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $query = "SELECT Imagem FROM users WHERE id = ?";
                 $stmt = mysqli_prepare($conexao, $query);
                 mysqli_stmt_bind_param($stmt, "i", $id);
-                mysqli_stmt_execute($stmt);
+                mysqli_stmt_execute($stmt); 
                 $result = mysqli_stmt_get_result($stmt);
             
                 $imagem_antiga = null;
                 if ($row = mysqli_fetch_assoc($result)) {
                     $imagem_antiga = $row['Imagem'];
-                    $caminho_imagem_antiga = "imagens/" . $imagem_antiga;
+                    $caminho_imagem_antiga = "../imagens/" . $imagem_antiga;
                 }
             
+                // Verificar se a imagem foi enviada
                 if (!empty($_FILES["imagem"]["name"]) && $_FILES["imagem"]["error"] == 0) {
                     $fileName = basename($_FILES["imagem"]["name"]);
-                    $targetFilePath = "imagens/" . $fileName;
+                    $targetFilePath = "../imagens/" . $fileName;
             
                     if (move_uploaded_file($_FILES["imagem"]["tmp_name"], $targetFilePath)) {
+                        // Deletar a imagem antiga, se existir
                         if (!empty($imagem_antiga) && file_exists($caminho_imagem_antiga)) {
                             unlink($caminho_imagem_antiga);
                         }
                     }
                 } else {
-                    $fileName = $imagem_antiga;
+                    $fileName = $imagem_antiga; // Mantém a imagem antiga se nenhuma nova imagem for enviada
                 }
             
+                $sql = "SELECT * FROM users WHERE (Username = ? OR Email = ?) AND id != ?";
+                $stmt = mysqli_prepare($conexao, $sql);
+                mysqli_stmt_bind_param($stmt, "ssi", $username, $email,$id);
+                mysqli_stmt_execute($stmt);
+                $result = mysqli_stmt_get_result($stmt);
+            
+                if (mysqli_num_rows($result) > 0) {
+                    echo "<p class='error'>O Username ou Email já estão em uso! Não foi possível atualizar.</p>";
+                    header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
+                }
+            
+
+                else{
                 $sql = "UPDATE users SET Nome = ?, Email = ?, Username = ?, Imagem = ? WHERE id = ?";
                 $stmt = mysqli_prepare($conexao, $sql);
-                mysqli_stmt_bind_param($stmt, "ssssi", $nome, $email, $username, $fileName, $id);
-            
-                if (mysqli_stmt_execute($stmt)) {
-                    echo "<p class='success'>Dados atualizados com sucesso!</p>";
-                    header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
-                                    } 
-            
+                    mysqli_stmt_bind_param($stmt, "ssssi", $nome, $email, $username, $fileName, $id);
+                    if (mysqli_stmt_execute($stmt)) {
+                        echo "<p class='success'>Utilizador Atualizado com sucesso!</p>";
+                        header("Refresh:2; url=administrador_management.php"); // Redireciona após 2 segundos
+                    } 
                 mysqli_stmt_close($stmt);
             }
+        }
+    }
+            
+            
             
                 
         
@@ -648,7 +665,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <img src="../logo/Logo.png" alt="Logo" style="width:10rem;">
             </div>
         </div>
-        <h1>Centro de Gestores</h1>
+        <h1>Centro de Administradores</h1>
         <div class="nav-right">
         <div class="icon dropdown">
                 <span class="menu-toggle">
@@ -755,7 +772,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // Atualizar o valor do campo de quantidade com o stock do produto
             var quantidadeInput = document.getElementById('quantidade');
-            quantidadeInput.value = 0;  
+            quantidadeInput.value = 1;  
             quantidadeInput.max = 100;
 
             // Atualizar o valor de stock exibido em outro local
@@ -800,7 +817,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // Atualizar o valor do campo de quantidade com o stock do produto
             var quantidadeInput = document.getElementById('quantidade');
-            quantidadeInput.value = 0;  
+            quantidadeInput.value = 1;  
             quantidadeInput.max = stock;
 
             // Atualizar o valor de stock exibido em outro local
@@ -932,7 +949,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                             <label for="imagem">Imagem de Perfil:</label>
                             <div>
-                                <img src="imagens/<?php echo htmlspecialchars($imagem); ?>" alt="Imagem do Utilizador" width="100">
+                                <img src="../imagens/<?php echo htmlspecialchars($imagem); ?>" alt="Imagem do Utilizador" width="100">
                                 <br>
                                 <small>Imagem atual</small>
                             </div>
@@ -1132,7 +1149,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                             <label for="imagem">Imagem Coleção:</label>
                             <div>
-                                <img src="colecoes/<?php echo htmlspecialchars($imagem); ?>" alt="Imagem da Coleção" width="100"> 
+                                <img src="../colecoes/<?php echo htmlspecialchars($imagem); ?>" alt="Imagem da Coleção" width="100"> 
                                 <br>
                                 <small>Imagem atual</small>
                             </div>
@@ -1329,7 +1346,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <label for="imagem">Imagem Atual:</label>
                             <div>
                                 <?php if ($imagem): ?>
-                                    <img src="produtos/<?php echo htmlspecialchars($imagem); ?>" alt="Imagem do Produto" width="100">
+                                    <img src="../imagens/<?php echo htmlspecialchars($imagem); ?>" alt="Imagem do Produto" width="100">
                                     <br>
                                     <small>Imagem atual</small>
                                 <?php else: ?>

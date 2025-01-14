@@ -5,6 +5,7 @@ include '../session_check.php';
 // Inicializar variáveis para filtros
 $genero = null;
 $tipo_nome = null;
+$colecao_nome = null;
 
 // Verificar se o parâmetro "Genero" está na URL
 if (isset($_GET['Genero'])) {
@@ -14,6 +15,11 @@ if (isset($_GET['Genero'])) {
 // Verificar se o parâmetro "tipo" está na URL
 if (isset($_GET['tipo'])) {
     $tipo_nome = mysqli_real_escape_string($conexao, $_GET['tipo']); // Escapar o valor do parâmetro para evitar SQL injection
+}
+
+// Verificar se o parâmetro "Colecao" está na URL
+if (isset($_GET['Colecao'])) {
+    $colecao_nome = mysqli_real_escape_string($conexao, $_GET['Colecao']); // Escapar o valor do parâmetro para evitar SQL injection
 }
 
 // Inicializa a consulta SQL
@@ -40,6 +46,22 @@ if ($tipo_nome) {
     }
 }
 
+// Adicionar filtro de coleção, se fornecido
+if ($colecao_nome) {
+    // Buscar o ID da coleção correspondente na tabela "colecoes"
+    $query_colecao = "SELECT id FROM colecoes WHERE descricao = '$colecao_nome'";
+    $result_colecao = mysqli_query($conexao, $query_colecao);
+
+    if ($result_colecao && mysqli_num_rows($result_colecao) > 0) {
+        $row_colecao = mysqli_fetch_assoc($result_colecao);
+        $colecao_id = $row_colecao['id'];
+        $sql .= " AND Colecao = $colecao_id"; // Filtra pelos produtos dessa coleção
+    } else {
+        // Caso a coleção não exista, não filtra por colecao
+        $colecao_nome = null;
+    }
+}
+
 // Adicionar GROUP BY se necessário
 $sql .= " GROUP BY Nome"; // Agrupa pelo nome dos produtos
 
@@ -48,7 +70,7 @@ $result_produtos = mysqli_query($conexao, $sql);
 
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -63,24 +85,6 @@ $result_produtos = mysqli_query($conexao, $sql);
     <div class="free-shipping-bar">
         FREE SHIPPING ON ALL ORDERS OVER 100€
     </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const menuToggle = document.querySelector('.menu-toggle');
-            const dropdown = document.querySelector('.dropdown');
-
-            menuToggle.addEventListener('click', function() {
-                dropdown.classList.toggle('show');
-            });
-
-            // Fechar o menu se o usuário clicar fora dele
-            window.addEventListener('click', function(e) {
-                if (!dropdown.contains(e.target) && !menuToggle.contains(e.target)) {
-                    dropdown.classList.remove('show');
-                }
-            });
-        });
-    </script>
 
     <br><br>
     <?php

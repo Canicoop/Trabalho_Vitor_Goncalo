@@ -1,12 +1,12 @@
 <?php
-include 'conexao.php';
+include '../conexao.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nome = $_POST['nome'];
     $email = $_POST['email'];
     $username = $_POST['username'];
     $password = $_POST['password'];
-    $targetDir = "imagens/";
+    $targetDir = "../imagens/";
 $fileName = basename($_FILES["imagem"]["name"]);
 $targetFilePath = $targetDir . $fileName;
 
@@ -49,7 +49,7 @@ $targetFilePath = $targetDir . $fileName;
         $stmt = mysqli_prepare($conexao, $sql);
         
         if (mysqli_stmt_execute($stmt)) {
-            header("Location: PaginaInicial.php");
+            header("Location: ../paginainicial/PaginaInicial.php");
         } else {
             $error = "Erro ao criar conta: " . mysqli_error($conexao);
         }

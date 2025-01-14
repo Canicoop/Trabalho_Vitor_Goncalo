@@ -1,13 +1,12 @@
 <?php
 session_start();
-include 'conexao.php';
+include '../conexao.php';
 
 // Verifica se o usuário está logado
 if (!isset($_SESSION['user_id'])) {
     die('Você precisa estar logado para adicionar itens ao carrinho.');
 }
 
-// ID do usuário logado
 $user_id = $_SESSION['user_id'];
 
 if (isset($_GET['produto_nome']) && isset($_GET['tamanho'])) {
@@ -33,6 +32,21 @@ if (isset($_GET['produto_nome']) && isset($_GET['tamanho'])) {
         $stmt->bind_param("ii", $user_id, $produto_id);
         $stmt->execute();
         $result = $stmt->get_result();
+
+        // Buscar o estoque do produto
+        $query_Stock = "SELECT Stock FROM produtos WHERE id = ?";
+        $stmt_Stock = $conexao->prepare($query_Stock);
+        $stmt_Stock->bind_param("i", $produto_id);
+        $stmt_Stock->execute();
+        $result_Stock = $stmt_Stock->get_result();
+        $produto_Stock = $result_Stock->fetch_assoc();
+        $Stock = $produto_Stock['Stock']; // Quantidade disponível no Stock
+
+        // Verificar se a quantidade no carrinho excede o Stock
+        if ($nova_quantidade > $Stock) {
+            // Exibir mensagem de erro
+            echo "A quantidade solicitada excede o estoque disponível. Stock disponível: " . $Stock;
+        }
     
         if ($result->num_rows > 0) {
             // Atualizar a quantidade do produto no carrinho
@@ -54,7 +68,6 @@ if (isset($_GET['produto_nome']) && isset($_GET['tamanho'])) {
     }
 }
 
-
 // Verifica se o usuário está logado
 if (!isset($_SESSION['user_id'])) {
     die('Você precisa estar logado para ver o carrinho.');
@@ -64,7 +77,7 @@ $user_id = $_SESSION['user_id'];
 
 // Obter os itens do carrinho do banco de dados
 $query = "
-    SELECT c.id AS carrinho_id, p.Nome, p.Preco, p.Imagem, c.quantidade, t.descricao AS tamanho
+    SELECT c.id AS carrinho_id, p.Nome, p.Preco, p.Imagem, c.quantidade, t.descricao AS tamanho, p.Stock
     FROM carrinho c
     INNER JOIN produtos p ON c.id_Produto = p.id
     INNER JOIN tamanho t ON p.tamanho = t.id
@@ -75,11 +88,11 @@ $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Exibir os itens na página
+$finalizar_compra_enabled = true; // Variável para controlar a exibição do botão de finalizar compra
 
+// Exibir os itens na página
 if (isset($_GET['remove_from_cart'])) {
     $carrinho_id = intval($_GET['remove_from_cart']);
-
     $delete_query = "DELETE FROM carrinho WHERE id = $carrinho_id AND id_Cliente = $user_id";
     $conexao->query($delete_query);
 
@@ -114,9 +127,6 @@ if ($result_user && $result_user->num_rows > 0) {
     $user_name = htmlspecialchars($user_data['Nome']); // Nome do usuário
 } 
 
-
-
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -125,18 +135,18 @@ if ($result_user && $result_user->num_rows > 0) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carrinho de Compras</title>
     <link rel="stylesheet" href="carrinho.css">
-    <link rel="stylesheet" href="PaginaInicial.css">
+    <link rel="stylesheet" href="../paginainicial/PaginaInicial.css">
 </head>
 <body>
     <table>
-        <td><a href="PaginaInicial.php" id="no-style-link">
-                <img class="no-style-link" src="Logo.png" alt="Logo" style="width:10rem;">
+        <td><a href="../paginainicial/PaginaInicial.php" id="no-style-link">
+                <img class="no-style-link" src="../logo/Logo.png" alt="Logo" style="width:10rem;">
             </a>
         </td>
         <td><h1>Carrinho de <?php echo $user_name; ?></h1></td>
         <td>
             <div class="icon">
-                <a href="logout.php">
+                <a href="../logout.php">
                     <svg xmlns="http://www.w3.org/2000/svg" color="black" width="30" height="30" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M10.146 12.354a.5.5 0 0 1 0-.708L12.793 9H5.5a.5.5 0 0 1 0-1h7.293l-2.647-2.646a.5.5 0 0 1 .708-.708l3.5 3.5a.5.5 0 0 1 0 .708l-3.5 3.5a.5.5 0 0 1-.708 0z"/>
                         <path fill-rule="evenodd" d="M13 14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-7a2 2 0 0 0-2 2v1a.5.5 0 0 1-1 0V4a3 3 0 0 1 3-3h7a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-7a3 3 0 0 1-3-3v-1a.5.5 0 0 1 1 0v1a2 2 0 0 0 2 2h7z"/>
@@ -145,6 +155,7 @@ if ($result_user && $result_user->num_rows > 0) {
             </div>
         </td>
     </table>
+    
     <?php if ($result->num_rows > 0): ?>
         <table>
             <thead>
@@ -163,9 +174,14 @@ if ($result_user && $result_user->num_rows > 0) {
                 while ($row = $result->fetch_assoc()):
                     $total_item = $row['Preco'] * $row['quantidade'];
                     $total_geral += $total_item;
+
+                    // Verificar se a quantidade excede o estoque
+                    if ($row['quantidade'] > $row['Stock']) {
+                        $finalizar_compra_enabled = false; // Desabilitar o botão de finalizar
+                    }
                 ?>
                     <tr>
-                        <td><img src="produtos/<?php echo htmlspecialchars($row['Imagem']); ?>" alt="<?php echo htmlspecialchars($row['Nome']); ?>" style="width: 50px;"></td>
+                        <td><img src="../produtos/<?php echo htmlspecialchars($row['Imagem']); ?>" alt="<?php echo htmlspecialchars($row['Nome']); ?>" style="width: 50px;"></td>
                         <td><?php echo htmlspecialchars($row['Nome']); ?> (<?php echo htmlspecialchars($row['tamanho']); ?>)</td>
                         <td><?php echo number_format($row['Preco'], 2, ',', '.'); ?>€</td>
                         <td>
@@ -173,6 +189,7 @@ if ($result_user && $result_user->num_rows > 0) {
                             <form action="carrinho.php" method="POST" style="display: inline;">
                                 <input type="hidden" name="update_quantity" value="<?php echo $row['carrinho_id']; ?>">
                                 <input type="number" name="quantidade" value="<?php echo $row['quantidade']; ?>" min="1" style="width: 50px;" required>
+                                <button class="hover" type="submit">Atualizar</button>
                             </form>
                         </td>
                         <td><?php echo number_format($total_item, 2, ',', '.'); ?>€</td>
@@ -188,16 +205,20 @@ if ($result_user && $result_user->num_rows > 0) {
                     <td colspan="4">Total Geral</td>
                     <td><?php echo number_format($total_geral, 2, ',', '.'); ?>€</td>
                     <td>
-                    <a class="hover" href="FinalizarCompra.php">Finalizar Compra</a></td>
+                    <?php if ($finalizar_compra_enabled): ?>
+                        <a class="hover" href="../finalizar/FinalizarCompra.php">Finalizar Compra</a>
+                    <?php else: ?>
+                        <span style="color: red;">Quantidade excede o stock. Não é possível finalizar a compra.</span>
+                    <?php endif; ?>
+                    </td>
                 </tr>
             </tfoot>
         </table>
     <?php endif; ?>
-    <br>
-    <br>
-    <br>
     
-    <?php include 'footer.php'; ?>
+    <br><br><br>
+    
+    <?php include '../footer.php'; ?>
 
 </body>
 </html>
